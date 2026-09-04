@@ -3,6 +3,8 @@
 Reviewed comparison, 2026-09-04. This audit compares theorem statements, not search-hit counts.
 The [statement matrix](statement-matrix.md) records source models and exact overlap.
 [Baseline sources](baselines.md) cover synthesis and nonuniform hardness.
+The [tensor follow-up](tensor-followup.md) records direct antecedents for
+COPY expansion, semiring changes, and exact contraction rewrites.
 The [coverage analysis](../coverage/index.md) contains the proposed occupancy theorem.
 The [research overview](../index.md) supplies the manuscript context.
 

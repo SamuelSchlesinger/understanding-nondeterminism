@@ -38,7 +38,11 @@ and an accurate account of the actual AI-assisted methods.
    [baseline sources](literature/baselines.md): exact comparison with
    elimination, knowledge compilation, synthesis, circuit lower bounds, and
    uniform versus nonuniform hypotheses.
-5. [Synthesis and pedagogy](synthesis/index.md), including
+5. [Weaker aggregation](aggregation/index.md): a classical polynomial
+   fingerprint transfer, cycle-preserving witness tags, and the obstruction
+   to a short universal linear fingerprint. This bounded investigation
+   supplies a research target, not a better general exponent.
+6. [Synthesis and pedagogy](synthesis/index.md), including
    [methods and provenance](synthesis/methods.md).
 
 The all-quantified [counting corollary](../sections/counting-algorithm.tex)
@@ -53,11 +57,21 @@ The main structural, coverage, and example proofs have been integrated.
 Independent structural and coverage reviews found no proof-breaking error.
 The final integrated review also checked the uniform counting argument.
 The source audit found two minor bibliographic-language corrections; both
-were applied. Final corpus checks and PDF inspection are in progress.
+were applied. The aggregation arguments and their four classical sources
+also received separate mathematical and source reviews. Final corpus
+checks pass: 14 reachable documents, 37 canonical sources, 75 LaTeX
+labels, 30 cited BibTeX entries, and all four retained finite-check records.
+The 34-page PDF compiles without warnings; every rendered page was inspected.
+Two bibliography capitalization issues found during inspection were corrected,
+and the affected pages were rendered and checked again. This verifies the
+assembled draft; the mathematical and priority limitations below remain.
 
 Review records are retained separately: [structural audit](../review-notes/structural-audit.md),
 [coverage audit](../review-notes/coverage-audit.md), and
 [source audit](../review-notes/fabrication-audit.md).
+The final additions have an [assembly audit](../review-notes/aggregation-sources.md),
+and PDF coverage is recorded for [pages 1-17](../review-notes/final-pdf-root-review.md)
+and [pages 18-34](../review-notes/final-pdf-review.md).
 
 ## Supplementary code
 

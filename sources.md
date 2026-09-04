@@ -34,6 +34,20 @@ Antoine Amarilli, Florent Capelli, Mikael Monet, and Pierre Senellart. Connectin
 
 [Primary record](https://doi.org/10.1007/s00224-019-09930-2).
 
+<a id="beaudrap-rewriting"></a>
+## beaudrap-rewriting
+
+Niel de Beaudrap, Aleks Kissinger, and Konstantinos Meichanetzidis. Tensor Network Rewriting Strategies for Satisfiability and Counting. QPL 2020 proceedings, Electronic Proceedings in Theoretical Computer Science 340, 46-59, 2021. DOI:10.4204/EPTCS.340.3. Full arXiv:2004.06455v2 inspected.
+
+[Primary record](https://doi.org/10.4204/EPTCS.340.3).
+
+<a id="biamonte-copy"></a>
+## biamonte-copy
+
+Jacob D. Biamonte, Jason Morton, and Jacob W. Turner. Tensor Network Contractions for #SAT. Journal of Statistical Physics 160(5), 1389-1404, 2015. DOI:10.1007/s10955-015-1276-z. Full arXiv:1405.7375v2 inspected; theorem numbers refer to that version.
+
+[Primary record](https://doi.org/10.1007/s10955-015-1276-z).
+
 <a id="bodlaender-cubic"></a>
 ## bodlaender-cubic
 
@@ -118,6 +132,13 @@ T. H. Johnson, J. D. Biamonte, S. R. Clark, and D. Jaksch. Solving search proble
 
 [Primary record](https://doi.org/10.1038/srep01235).
 
+<a id="kourtis-counting"></a>
+## kourtis-counting
+
+Stefanos Kourtis, Claudio Chamon, Eduardo R. Mucciolo, and Andrei E. Ruckenstein. Fast Counting with Tensor Networks. SciPost Physics 7(5), article 060, 2019. DOI:10.21468/SciPostPhys.7.5.060. Full arXiv:1805.00475v2 inspected.
+
+[Primary record](https://doi.org/10.21468/SciPostPhys.7.5.060).
+
 <a id="lialina-sat"></a>
 ## lialina-sat
 
@@ -167,6 +188,13 @@ Hiroki Morizumi. Some Results on the Circuit Complexity of Bounded Width Circuit
 
 [Primary record](https://arxiv.org/abs/1811.01347v2).
 
+<a id="mvv87"></a>
+## mvv87
+
+Ketan Mulmuley, Umesh V. Vazirani, and Vijay V. Vazirani. Matching Is as Easy as Matrix Inversion. Combinatorica 7(1), 105-113, 1987. DOI:10.1007/BF02579206. Conference version: STOC 1987, 345-354, DOI:10.1145/28395.383347. Author PDF: https://people.eecs.berkeley.edu/~vazirani/pubs/matching.pdf.
+
+[Primary record](https://doi.org/10.1007/BF02579206).
+
 <a id="nurk-sat"></a>
 ## nurk-sat
 
@@ -194,6 +222,27 @@ N. P. Redkin. Implementation complexity of Boolean functions with a small number
 N. P. Redkin. On the complexity of Boolean functions with small number of ones. Discrete Mathematics and Applications 14(6), 619-630, 2004. DOI:10.1515/1569392043272511. Russian original: Diskretnaya Matematika 16(4), 20-31, 2004; original PDF inspected.
 
 [Primary record](https://www.mathnet.ru/eng/dm172).
+
+<a id="schwartz80"></a>
+## schwartz80
+
+Jacob T. Schwartz. Fast Probabilistic Algorithms for Verification of Polynomial Identities. Journal of the ACM 27(4), 701-717, 1980. DOI:10.1145/322217.322225.
+
+[Primary record](https://doi.org/10.1145/322217.322225).
+
+<a id="valiant-vazirani86"></a>
+## valiant-vazirani86
+
+Leslie G. Valiant and Vijay V. Vazirani. NP Is as Easy as Detecting Unique Solutions. Theoretical Computer Science 47, 85-93, 1986. DOI:10.1016/0304-3975(86)90135-0. Full published PDF inspected: https://www.cs.toronto.edu/tss/files/papers/1-s2.0-0304397586901350-main.pdf.
+
+[Primary record](https://doi.org/10.1016/0304-3975(86)90135-0).
+
+<a id="valiant79"></a>
+## valiant79
+
+Leslie G. Valiant. The Complexity of Computing the Permanent. Theoretical Computer Science 8(2), 189-201, 1979. DOI:10.1016/0304-3975(79)90044-6. Full published PDF inspected: https://www.cs.bu.edu/faculty/gacs/courses/cs535/papers/Valiant_permanent.pdf.
+
+[Primary record](https://doi.org/10.1016/0304-3975(79)90044-6).
 
 <a id="wang-penalties"></a>
 ## wang-penalties

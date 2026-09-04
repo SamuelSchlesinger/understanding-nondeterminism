@@ -71,5 +71,24 @@ remaining priority uncertainty and precise retrieval gaps.
 
 No end-to-end runtime experiment or Fomin-Hoie implementation is claimed.
 The counting theorem is justified by its analytical multiplicity, bit-cost,
-and constructive-layout proof. This record reports methods and evidence,
-not private model reasoning.
+and constructive-layout proof.
+
+The user's suggestion of a cheaper aggregate prompted a bounded analytical
+investigation of weighted characteristic-two fingerprints. It produced a
+transfer from efficient field evaluation to exact nonuniform projection,
+cycle-preserving unary tags, and a universal linear-fingerprint obstruction.
+These arguments use classical polynomial identity testing; no improved
+general exponent is claimed. Separate [proof](../../review-notes/aggregation-review.md)
+and [source](../../review-notes/aggregation-sources.md) reviews were completed.
+Two wording corrections from the proof review were applied. No experiment
+was needed for this investigation: the transfer, obstruction, and matching
+example have analytical proofs in the manuscript.
+
+The assembled draft passed the corpus audit and all four retained finite
+verification records. Its 34-page PDF compiled without warnings and was
+inspected page by page. The final visual pass corrected two bibliography
+capitalization issues; the three affected pages were rendered and inspected
+again, with unchanged text and pagination on pages 1-31. Source assembly
+was audited separately from the mathematical reviews.
+
+This record reports methods and evidence, not private model reasoning.
