@@ -1,0 +1,9 @@
+Cyclic verifier truth tables: 4 instances, 25600 input pairs passed.
+Cyclic exact gate/support/shared-vertex formulas: k=3,...,10 passed.
+Identical fiber profiles with covers 1 versus 2^k: k=2,...,6 passed.
+Distribution tradeoff L=8: pair value 28.499981; uniform lower bound 31.875000.
+Distribution tradeoff L=16: pair value 52.500000; uniform lower bound 63.999023.
+Distribution tradeoff L=32: pair value 100.500000; uniform lower bound 128.000000.
+Distribution tradeoff L=64: pair value 196.500000; uniform lower bound 256.000000.
+Sparse block correction: 141 truth-table instances passed; seed=20260904.
+Incompatible per-gate cover minimizers: sum of minima 2, minimum of sum 3 passed.

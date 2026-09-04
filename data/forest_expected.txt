@@ -1,0 +1,4 @@
+Exhaustive forest simulation: 9280 circuits passed.
+Seeded forest simulation: 2000 random circuits and 3 fixtures passed;
+  seed=20260904, maximum cut-set size exercised=5.
+Projection distribution: all 65536 truth tables passed (n=2, m=2).

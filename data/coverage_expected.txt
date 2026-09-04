@@ -1,0 +1,4 @@
+Sparse block synthesis: 362 support sets passed.
+Shared restrictions plus exact correction: 896 circuit/sample pairs passed.
+Exact rational occupancy/alteration identities: 140 cases passed;
+  includes biased distributions, zero masses, t=0, and sparse-correction Jensen checks.

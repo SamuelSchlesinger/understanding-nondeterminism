@@ -1,0 +1,6 @@
+Zero-gate designated input projections: 5 OK
+Exhaustive verifier projections: 9280 OK
+Seeded verifier projections: 600 OK (seed 20260904)
+Adversarial symbolic tensor networks: 140 OK
+Reduction and boundary checks: degree_1=18535, degree_2=15590, loop=3850, parallel_2=181, parallel_3=659, equality_split=140, cubic_kernel=162, median_ties=204
+All generated circuits, cycle-rank inequalities and gate-cost checks: OK
