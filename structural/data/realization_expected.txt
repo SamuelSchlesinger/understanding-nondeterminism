@@ -1,0 +1,16 @@
+Hamiltonian-cycle plus matching graphs, n=4: 1 OK
+Hamiltonian-cycle plus matching graphs, n=6: 4 OK
+Hamiltonian-cycle plus matching graphs, n=8: 31 OK
+Hamiltonian-cycle plus matching graphs, n=10: 293 OK
+Hamiltonian-cycle plus matching graphs, n=12: 3326 OK
+Bridged triangle block chains: 21 OK
+Bridged triangle-free block chains: 21 OK
+Seeded 2-connected cubic graphs with ear orders, n=14: 8 OK
+Seeded 2-connected cubic graphs with ear orders, n=20: 8 OK
+Seeded 2-connected cubic graphs with ear orders, n=30: 8 OK
+Seeded 2-connected cubic graphs with ear orders, n=60: 8 OK
+Triangle-free Hamiltonian cases: 913 OK
+Exact critical Hamiltonian cases (k divisible by 3): 68 OK
+Exhaustive verifier truth tables and symbolic projection checks: 7 OK
+Legal degree-one/two contractions: 72401 OK
+Exact labeled kernels and zero cycle loss: 3729 OK

@@ -58,7 +58,7 @@ Hans L. Bodlaender, Edouard Bonnet, Lars Jaffke, Dusan Knop, Paloma T. Lima, Mar
 <a id="broering-width"></a>
 ## broering-width
 
-Elizabeth Broering and Satyanarayana V. Lokam. Width-Based Algorithms for SAT and CIRCUIT-SAT. In Theory and Applications of Satisfiability Testing, SAT 2003, Lecture Notes in Computer Science 2919, 162-171, published 2004. DOI:10.1007/978-3-540-24605-3_13. Publisher abstract and primary preview pp.162-163 inspected; remaining full text not retrieved.
+Elizabeth Broering and Satyanarayana V. Lokam. Width-Based Algorithms for SAT and CIRCUIT-SAT. In Theory and Applications of Satisfiability Testing, SAT 2003, Lecture Notes in Computer Science 2919, 162-171, published 2004. DOI:10.1007/978-3-540-24605-3_13. Publisher preview pp.162-163 and a public textual reproduction of the primary chapter through p.168 inspected; the latter's formulas were not checked against page images. Pages 169-171 remain unretrieved.
 
 [Primary record](https://doi.org/10.1007/978-3-540-24605-3_13).
 
@@ -97,12 +97,26 @@ Rina Dechter. Bucket elimination: A unifying framework for reasoning. Artificial
 
 [Primary record](https://doi.org/10.1016/S0004-3702(99)00059-4).
 
+<a id="dudek-contraction"></a>
+## dudek-contraction
+
+Jeffrey M. Dudek, Leonardo Duenas-Osorio, and Moshe Y. Vardi. Efficient Contraction of Large Tensor Networks for Weighted Model Counting through Graph Decompositions. arXiv:1908.04381v2, April 27, 2020; first posted 2019. Full version 2 inspected; no later journal publication is asserted.
+
+[Primary record](https://doi.org/10.48550/arXiv.1908.04381).
+
 <a id="ellis-search"></a>
 ## ellis-search
 
 John A. Ellis, Ivan Hal Sudborough, and Jonathan S. Turner. The vertex separation and search number of a graph. Information and Computation 113(1), 50-79, 1994. DOI:10.1006/inco.1994.1064. Earlier author technical report WUCS-87-11: https://openscholarship.wustl.edu/cse_research/796/.
 
 [Primary record](https://doi.org/10.1006/inco.1994.1064).
+
+<a id="even-tarjan-st"></a>
+## even-tarjan-st
+
+Shimon Even and Robert Endre Tarjan. Computing an st-numbering. Theoretical Computer Science 2(3), 339-344, 1976. DOI:10.1016/0304-3975(76)90086-4. Publisher abstract and Princeton institutional publication record verified. The abstract attributes existence to Lempel, Even, and Cederbaum; the manuscript supplies a self-contained existence proof and does not invoke the linear-time algorithm.
+
+[Primary record](https://doi.org/10.1016/0304-3975(76)90086-4).
 
 <a id="fomin-pathwidth"></a>
 ## fomin-pathwidth
@@ -198,7 +212,7 @@ Ketan Mulmuley, Umesh V. Vazirani, and Vijay V. Vazirani. Matching Is as Easy as
 <a id="nurk-sat"></a>
 ## nurk-sat
 
-Sergey Nurk. An O(2^{0.4058m}) upper bound for Circuit SAT. POMI preprint 10/2009, accepted December 1, 2009. Institutional title and abstract verified; full text not retrieved.
+Sergey Nurk. An O(2^{0.4058m}) upper bound for Circuit SAT. POMI preprint 10/2009, accepted December 1, 2009. Full Russian preprint inspected, including a rendered check of Theorem 3.1; the English PDF link remains unavailable. Primary compressed PDF: http://ftp.pdmi.ras.ru/pub/publicat/preprint/2009/10-09_rus.pdf.gz.
 
 [Primary record](https://www.pdmi.ras.ru/preprint/2009/09-10.html).
 

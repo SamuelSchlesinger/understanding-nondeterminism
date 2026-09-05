@@ -25,6 +25,11 @@ and an accurate account of the actual AI-assisted methods.
    h+b+kappa <= q+1, linear-cost reduction to a cubic tensor graph, and the
    fixed-epsilon universal projection rate 1/5. Ordinary preprocessing stays
    outside the exponent. Conditioning can further reduce component costs.
+   The [critical-structure theorem](structural/critical-balance.md) derives
+   simultaneous necessary input, cycle-loss, and width conditions.
+   The [exact realization theorem](structural/realization.md) attains nearly
+   critical supplied budgets with easy projections, and calculates the
+   supplied verifier's precise excess over its minimum size.
 2. [Witness coverage and distribution](coverage/index.md): a single sampled
    family controls shared restriction occupancies and sparse correction.
    The resulting bound includes gatewise density minima and a necessary
@@ -35,7 +40,8 @@ and an accurate account of the actual AI-assisted methods.
    occupancy costs, and conflicts between coverage and sharing objectives.
 4. [Literature and scope](literature/index.md), the
    [statement matrix](literature/statement-matrix.md), and
-   [baseline sources](literature/baselines.md): exact comparison with
+   [baseline sources](literature/baselines.md), and
+   [final counting comparison](literature/final-comparison.md): exact comparison with
    elimination, knowledge compilation, synthesis, circuit lower bounds, and
    uniform versus nonuniform hypotheses.
 5. [Weaker aggregation](aggregation/index.md): a classical polynomial
@@ -47,37 +53,50 @@ and an accurate account of the actual AI-assisted methods.
 
 The all-quantified [counting corollary](../sections/counting-algorithm.tex)
 proves an exponential-space uniform algorithm with fixed-epsilon rate
-approaching 1/4 in gate count. Its [focused source comparison](../review-notes/sat-comparison.md)
-keeps priority unresolved. This consequence does not use the nonuniform
+approaching 1/4 in gate count. Its [final source comparison](literature/final-comparison.md)
+narrows specific access gaps while keeping priority unresolved. This consequence does not use the nonuniform
 ordinary-input synthesis step.
 
 ## Status
 
-The main structural, coverage, and example proofs have been integrated.
-Independent structural and coverage reviews found no proof-breaking error.
-The final integrated review also checked the uniform counting argument.
-The source audit found two minor bibliographic-language corrections; both
-were applied. The aggregation arguments and their four classical sources
-also received separate mathematical and source reviews. Final corpus
-checks pass: 14 reachable documents, 37 canonical sources, 75 LaTeX
-labels, 30 cited BibTeX entries, and all four retained finite-check records.
-The 34-page PDF compiles without warnings; every rendered page was inspected.
-Two bibliography capitalization issues found during inspection were corrected,
-and the affected pages were rendered and checked again. This verifies the
-assembled draft; the mathematical and priority limitations below remain.
+The final focused phase proved the finite stability inequality and the
+critical-structure theorem, including the conclusions for every legal residual
+kernel. It also proved exact realization for all simple 2-connected cubic
+graphs, with zero cycle loss and explicit near-critical budgets. The latter
+construction uses nonminimal AND-only verifiers; its exact minimum sizes
+prevent interpreting graph occurrence as circuit hardness.
+
+The source follow-up recovered Nurk's full Russian preprint and further
+Broering--Lokam chapter text, and checked an additional tensor-factoring
+antecedent. The precise access limits are recorded in the final comparison.
+This resolves specific retrieval questions while leaving historical priority
+unestablished. The aggregation investigation is now an appendix.
+
+The structural, coverage, critical-structure, realization, and example proofs
+are integrated. Separate analytical reviews checked the new deductions and
+the construction without using the finite checks as proof. The complete
+corpus audit passes: 17 reachable documents, 39 canonical sources, 80 LaTeX
+labels, 33 cited BibTeX entries, and all five retained finite-check records.
+The 39-page PDF compiles without warnings. The final integrated review,
+fresh-source audit, and rendered-page inspection are being completed.
 
 Review records are retained separately: [structural audit](../review-notes/structural-audit.md),
 [coverage audit](../review-notes/coverage-audit.md), and
 [source audit](../review-notes/fabrication-audit.md).
-The final additions have an [assembly audit](../review-notes/aggregation-sources.md),
-and PDF coverage is recorded for [pages 1-17](../review-notes/final-pdf-root-review.md)
-and [pages 18-34](../review-notes/final-pdf-review.md).
+The earlier aggregation additions have an
+[assembly audit](../review-notes/aggregation-sources.md).
+The new proofs have separate [critical-balance](../review-notes/critical-balance-review.md)
+and [realization](../review-notes/realization-review.md) reviews.
+The older PDF reviews for [pages 1-17](../review-notes/final-pdf-root-review.md)
+and [pages 18-34](../review-notes/final-pdf-review.md) concern the preceding
+34-page draft, not the final expanded manuscript.
 
 ## Supplementary code
 
 - [Forest compiler and finite relation counts](../scripts/check_claims.py).
 - [Shared restrictions, sparse synthesis, and occupancy checks](../scripts/check_coverage.py).
 - [Symbolic tensor compiler](structural/data/check_tensor_compiler.py).
+- [Exact kernel realization and graph reductions](structural/data/check_realization.py).
 - [Worked-family arithmetic and evaluations](examples/data/check_examples.py).
 - [Corpus audit](data/audit.py), run from the project root with `make check`.
 
@@ -96,8 +115,12 @@ Every manuscript citation also has its own entry in `references.bib`.
   of the hard range is established.
 - Exact priority of the combined statements is unestablished beyond the
   documented primary-source comparison. An older equivalent theorem may exist.
-- The numerical uniform SAT/#SAT comparison remains unresolved; a space
-  difference alone does not establish novelty or explain older benchmarks.
+- The counting exponent is arithmetically smaller than the specific decision
+  benchmarks inspected. Its historical priority and the best unrestricted-space
+  comparison remain unresolved; a space difference alone establishes neither.
+- Critical supplied budgets do not describe minimum verifiers. The realization
+  theorem does not attain the critical-structure theorem's hardness hypothesis
+  or establish a converse to its simultaneous necessary conditions.
 - The exact endpoint coefficients 1/5 and 1/4 with fixed polynomial prefactors,
   and their optimality, are not proved. The statements fix a positive epsilon.
 - Model reviewers can share errors. Their agreement is not a mathematical proof.

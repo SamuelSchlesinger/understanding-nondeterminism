@@ -84,11 +84,59 @@ Two wording corrections from the proof review were applied. No experiment
 was needed for this investigation: the transfer, obstruction, and matching
 example have analytical proofs in the manuscript.
 
-The assembled draft passed the corpus audit and all four retained finite
-verification records. Its 34-page PDF compiled without warnings and was
+The preceding draft passed the corpus audit and all four then-retained finite
+verification records. That 34-page PDF compiled without warnings and was
 inspected page by page. The final visual pass corrected two bibliography
 capitalization issues; the three affected pages were rendered and inspected
 again, with unchanged text and pagination on pages 1-31. Source assembly
 was audited separately from the mathematical reviews.
+
+## Final focused phase
+
+The user then authorized completing the paper through three bounded tasks:
+critical-balance deductions, a budgeted kernel realization theorem or
+obstruction, and resolution of specific source-comparison gaps. A preliminary
+review checked this decomposition before the independent construction and
+source tasks began. The root developed the critical-balance proof while a
+separate author developed the realization construction.
+
+The analytical results include a finite stability inequality, the necessary
+critical input and cycle budgets, and asymptotically saturated widths for
+every legal residual kernel. The realization proof constructs normalized
+AND-only verifiers for every simple 2-connected cubic graph, repairs repeated
+input wires within an explicit budget, and gives a legal reduction retaining
+the exact graph with zero cycle loss. Computing the exact functions and their
+minimum sizes exposes the supplied verifier's nonminimality.
+
+Separate reviewers checked the fixed-slack limits, input/interface counting,
+sparse-fiber conventions, conflict budget, sink construction, equality trees,
+and contraction tables. Review clarified which amplification hypothesis is
+retained when combining the sparse and structural conclusions, made the
+kernel-size limit explicit, and narrowed the realization's opening: the
+construction concerns critical gate and cycle budgets, not a converse to all
+simultaneous necessary conditions. These are analytical and scope checks,
+not statistical evidence.
+
+One new finite checker was justified by a concrete risk: the sketched graph
+expansion must actually split the incidence graph of the constructed circuit.
+It verifies gate lists, pin distinctness, budgets, equality-tree incidences,
+and legal degree-one/two graph contractions. It passed all 3,729 specified
+graph constructions and 72,401 contractions; seven representatives also
+passed exhaustive truth-table and symbolic projection checks. The other graph
+cases do not claim per-contraction tensor evaluation. The construction's
+general correctness and minimum sizes have independent analytical proofs.
+
+The source task recovered Nurk's complete Russian preprint and more text of
+Broering--Lokam, and checked the Dudek--Duenas-Osorio--Vardi factoring theorems.
+The [final comparison](../literature/final-comparison.md) supersedes the earlier
+retrieval limits, preserving the remaining unavailable text and priority
+uncertainty. A fresh adversarial source audit is separate from proof review.
+
+The expanded manuscript now passes all five retained finite verification
+records, with 17 reachable research documents, 39 canonical sources,
+80 LaTeX labels, and 33 cited BibTeX entries. Its 39-page PDF compiles without
+warnings. Final source and integrated reviews and a fresh visual inspection
+are in progress; the earlier 34-page inspection is not evidence for newly
+added or repaginated pages.
 
 This record reports methods and evidence, not private model reasoning.

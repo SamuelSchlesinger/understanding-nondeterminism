@@ -5,6 +5,8 @@ The [statement matrix](statement-matrix.md) records source models and exact over
 [Baseline sources](baselines.md) cover synthesis and nonuniform hardness.
 The [tensor follow-up](tensor-followup.md) records direct antecedents for
 COPY expansion, semiring changes, and exact contraction rewrites.
+The [final counting comparison](final-comparison.md) updates the Nurk and
+Broering--Lokam access limits and records the additional factoring antecedent.
 The [coverage analysis](../coverage/index.md) contains the proposed occupancy theorem.
 The [research overview](../index.md) supplies the manuscript context.
 
@@ -29,6 +31,8 @@ The structural exponent has a complete analytical proof and has passed independe
 | Subcubic `cw <= pw+2` | Known graph theorem | A short direct proof may be included with attribution. |
 | Cubic kernel plus excess exponent `d/3+o(d)` | Proved structural synthesis; priority unestablished | The exact reductions and uniform counting consequence have complete reviewed proofs. |
 | Universal projection exponent `s/5+o(s)` | Proved by the displayed structural argument | Priority unestablished; do not report as an established literature improvement yet. |
+| Critical input budgets, cycle loss, and width saturation | Proved necessary conditions from simultaneous upper bounds | No hard family or converse is established. |
+| Exact cubic realization at near-critical supplied budgets | Proved representation theorem with explicit gate accounting | Starts with classical st-numbering; supplied verifiers are nonminimal and their projections are easy. |
 
 ## The model that must remain fixed
 
@@ -158,7 +162,7 @@ A simple column-pattern grouping construction also gives `O(n+R*2^R)` from the e
 The minimum of available bounds can be used if the extra case distinction helps the main theorem.
 Upper bounds transfer from restricted complete bases to `B2`; their lower bounds and leading constants do not.
 
-## Structural exponent and the unresolved SAT comparison
+## Structural exponent and the scope of the SAT comparison
 
 The graph-theoretic ingredients are largely established.
 Fomin and Hoie give `pw(G) <= (1/6+epsilon)*|V(G)|` for sufficiently large subcubic graphs and fixed positive `epsilon`, constructively. [fomin-pathwidth][fomin-pathwidth]
@@ -184,7 +188,8 @@ For an all-existential verifier, the [counting corollary](../../sections/countin
 proves count-preserving reductions and polynomial bit costs, obtaining
 poly_delta(s+u)*2^min{b,(1/3+delta)(s+1-b)}. Balancing yields a fixed-epsilon
 rate approaching 1/4 with exponential space. The
-[focused comparison](../../review-notes/sat-comparison.md) records the remaining source gaps.
+[final comparison](final-comparison.md) records the recovered original texts,
+the additional factoring antecedent, and the remaining precise access limits.
 In contrast, the inspected circuit-SAT literature gives Nurk's gate-count exponent `0.4058`
 and Savinov's `0.389667`, the latter reproduced by Lialina. [nurk-sat][nurk-sat] [lialina-sat][lialina-sat]
 GKST give nontrivial `B2` counting algorithms below `3n` gates. [gkst-elimination][gkst-elimination]
@@ -194,7 +199,7 @@ The branching algorithms admit a natural depth-first implementation with polynom
 Polynomial space is an implementation inference here; no explicit universal restriction to polynomial space was located in the checked statements.
 There is a substantial explicit time-space tradeoff in width-parameterized SAT. [allender-space][allender-space]
 Earlier circuit-SAT work also analyzes cutwidth, pathwidth, and treewidth. [broering-width][broering-width]
-An exponential-space comparison may explain different goals, but it does not by itself resolve why the faster candidate is absent from the benchmark discussion.
+An exponential-space comparison may explain different goals, but it does not by itself resolve why the smaller displayed coefficient is absent from the benchmark discussion.
 The manuscript must not silently declare a new best SAT algorithm, nor dismiss the discrepancy as solved.
 Finite compiler checks test the implementation and examples; they do not prove the kernel theorem or its asymptotic exponent.
 

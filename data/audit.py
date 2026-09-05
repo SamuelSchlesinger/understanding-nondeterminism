@@ -19,6 +19,8 @@ CHECKS = (
     (PROJECT / "scripts/check_coverage.py", RESEARCH / "data/coverage_expected.txt"),
     (RESEARCH / "structural/data/check_tensor_compiler.py",
      RESEARCH / "structural/data/expected_output.txt"),
+    (RESEARCH / "structural/data/check_realization.py",
+     RESEARCH / "structural/data/realization_expected.txt"),
     (RESEARCH / "examples/data/check_examples.py",
      RESEARCH / "examples/data/expected_output.txt"),
 )

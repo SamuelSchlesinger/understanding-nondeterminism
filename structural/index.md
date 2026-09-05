@@ -2,6 +2,13 @@
 
 [Research overview](../index.md) | [Full constructive proof](proof.md)
 
+The [critical-balance analysis](critical-balance.md) proves finite stability
+and necessary conditions for hypothetical amplification at the five-gate
+boundary, including near saturation of the residual cubic width bound.
+The [kernel realization theorem](realization.md) realizes every simple
+2-vertex-connected cubic graph with almost critical supplied-circuit budgets
+and zero cycle loss, while computing both minimum function sizes exactly.
+
 The proved quantitative contribution is a stronger universal upper bound:
 
     C(exists y f(x,y)) <= 2^(s/5+o(s))
