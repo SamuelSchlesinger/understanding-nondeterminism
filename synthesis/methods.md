@@ -135,8 +135,22 @@ uncertainty. A fresh adversarial source audit is separate from proof review.
 The expanded manuscript now passes all five retained finite verification
 records, with 17 reachable research documents, 39 canonical sources,
 80 LaTeX labels, and 33 cited BibTeX entries. Its 39-page PDF compiles without
-warnings. Final source and integrated reviews and a fresh visual inspection
-are in progress; the earlier 34-page inspection is not evidence for newly
-added or repaginated pages.
+warnings. The final [source audit](../../review-notes/completion-source-audit.md)
+and [integrated review](../../review-notes/completion-integrated-review.md)
+are complete, with no outstanding corrections. Every current PDF page was
+visually inspected, split between the root's
+[pages 1-19](../../review-notes/completion-pdf-first-half.md) and a separate
+reviewer's [pages 20-39](../../review-notes/completion-pdf-second-half.md).
+The last pass kept a short methods paragraph together across a page break;
+the affected pages were freshly rendered and checked. The final PDF has
+387559 bytes and SHA-256
+`c2899a9481d64d8ecc98b429532bb62a48b3fbbef66ca69ccb412b4e5c3ac84b`.
+The earlier 34-page inspection remains historical evidence only.
+
+Completion here means that the authorized manuscript, analytical review,
+source assembly, finite checks, and final PDF inspection have been completed.
+It does not establish historical priority or venue suitability, and it does
+not resolve the unrestricted hard range. No publication or submission was
+performed.
 
 This record reports methods and evidence, not private model reasoning.

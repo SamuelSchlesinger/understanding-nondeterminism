@@ -77,8 +77,11 @@ are integrated. Separate analytical reviews checked the new deductions and
 the construction without using the finite checks as proof. The complete
 corpus audit passes: 17 reachable documents, 39 canonical sources, 80 LaTeX
 labels, 33 cited BibTeX entries, and all five retained finite-check records.
-The 39-page PDF compiles without warnings. The final integrated review,
-fresh-source audit, and rendered-page inspection are being completed.
+The 39-page PDF compiles without warnings. The final integrated review and
+fresh-source audit are complete, with all findings resolved. Every rendered
+page was inspected; the final paragraph-break correction and all affected
+pages were checked again. The authorized manuscript work is complete.
+The mathematical and priority limitations below remain explicit.
 
 Review records are retained separately: [structural audit](../review-notes/structural-audit.md),
 [coverage audit](../review-notes/coverage-audit.md), and
@@ -87,9 +90,19 @@ The earlier aggregation additions have an
 [assembly audit](../review-notes/aggregation-sources.md).
 The new proofs have separate [critical-balance](../review-notes/critical-balance-review.md)
 and [realization](../review-notes/realization-review.md) reviews.
+The final expanded manuscript has an
+[integrated analytical review](../review-notes/completion-integrated-review.md),
+[fresh-source audit](../review-notes/completion-source-audit.md), and visual
+reviews for [pages 1-19](../review-notes/completion-pdf-first-half.md) and
+[pages 20-39](../review-notes/completion-pdf-second-half.md).
 The older PDF reviews for [pages 1-17](../review-notes/final-pdf-root-review.md)
 and [pages 18-34](../review-notes/final-pdf-review.md) concern the preceding
 34-page draft, not the final expanded manuscript.
+
+Final PDF: 39 pages, 387559 bytes. Its SHA-256 is
+`c2899a9481d64d8ecc98b429532bb62a48b3fbbef66ca69ccb412b4e5c3ac84b`.
+The supporting research corpus has local checkpoints; the project-root
+manuscript is a local artifact, not a publication or submission.
 
 ## Supplementary code
 
