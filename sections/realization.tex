@@ -1,0 +1,182 @@
+\subsection{Critical graph budgets can coexist with an easy projection}
+\label{sec:kernel-realization}
+
+The critical gate and cycle budgets alone do not force a hard
+projection. A large class of cubic graphs can occur as exact residual
+kernels with nearly critical budgets and a simple projection. The
+distinction between the supplied circuit and a minimum circuit is
+essential here.
+
+\begin{theorem}[Cubic realization with controlled budgets]
+\label{thm:kernel-realization}
+Let $K$ be a finite simple 2-vertex-connected cubic graph and put
+$k=|V(K)|/2+1$. Set $t=\lfloor k/3\rfloor+1$; when $K$ is
+triangle-free, one may instead take $t=\lceil k/3\rceil$.
+There is an acyclic AND-only verifier on $t$ ordinary and $t$ witness
+inputs with
+\[
+ (p,q,h,b,\ell,\kappa)
+   =(0,k+2t-1,t,t,2k+3t-2,k).
+\]
+It has no constants, unary gates, repeated input wires at a gate,
+unused inputs, or gates outside its output cone. A specified legal
+equality splitting and reduction sequence produces exactly $K$, with
+zero cycle-rank loss. Every input is essential, but
+\[
+ f(x,y)=\AND_{i=1}^{t}x_i\land\AND_{j=1}^{t}y_j,
+ \qquad g(x)=\AND_{i=1}^{t}x_i,
+ \qquad \C(f)=2t-1,\quad \C(g)=t-1.
+\]
+Thus $h+b+\kappa=q+1$ and $t=k/3+O(1)$, while the supplied
+circuit exceeds its minimum size by exactly $k$ gates.
+\end{theorem}
+
+The syntactic conditions in the statement are those used by the
+compiler's normalization. They do not prohibit identities involving
+several gates, such as associativity and idempotence of AND.
+We give the construction and its accounting in full.
+
+\begin{proof}
+First give $K$ an acyclic orientation with one source and one sink.
+This is the classical $st$-numbering property of 2-connected graphs
+\citep{EvenTarjan1976}. An existence proof suffices here. Start with
+a cycle, choose adjacent vertices $s,z$, and order the vertices along
+the $s$-to-$z$ path obtained by deleting the edge $sz$. If some
+vertices remain outside the current set, one of their components has
+two distinct attachments to the current set; otherwise its unique
+attachment would be a cut vertex. Choose a path through that component
+between two such attachments $u,v$, with internal vertices outside.
+Orient the path from its earlier to its later endpoint and insert its
+internal vertices, in order, immediately after the earlier endpoint.
+Every old internal vertex retains neighbors on both sides, and each
+new vertex has its two path neighbors on opposite sides. Repeat until
+all vertices are ordered and orient every edge forward. Only $s$ is
+a source and only $z$ is a sink.
+
+\emph{The circuit skeleton.}
+Every other vertex is a fork with indegree one and outdegree two,
+or a join with indegree two and outdegree one. If their numbers are
+$F,J$, the degree sum gives
+\[
+ 3+F=J+3,\qquad F+J+2=2(k-1),\qquad F=J=k-2.
+\]
+Put witness $y_1$ at $s$. A fork copies its incoming wire at no gate
+cost. A join ANDs its incoming wires. At $z$, two AND gates combine
+the three incoming wires. This skeleton has $k$ gates.
+Temporarily assign each join output its own formal wire name, even
+if that join receives the same name twice. Call such a join a conflict.
+
+The sink receives at least two different names. Indeed a topologically
+last join exists, and any path from it to the sink contains only forks.
+If its output passes through a nonempty fork tree, a last fork would
+have both outgoing edges to the sink, contradicting simplicity.
+Its output therefore reaches the sink directly and on just one edge.
+It cannot name all three sink inputs. Choose two distinct names for
+the first sink gate; its new output and the third original input
+are distinct at the second gate.
+
+\emph{The conflict budget.}
+The subgraph on the source and forks is a forest. A cycle with an
+acyclic orientation would have a vertex with two incoming edges,
+which these vertices cannot have. Its components are exactly the
+trees carrying one formal wire name. A component not containing $s$
+with $u$ forks has one incoming edge and $u+1$ outgoing edges. Each
+conflict it supplies uses two outgoing edges. For $u=1$ there is no
+conflict, by simplicity; for $u\ge2$ their number is at most
+\[
+ \left\lfloor\frac{u+1}{2}\right\rfloor\le\frac{2u}{3}.
+\]
+The inequality is checked directly at $u=2$ and follows from
+$(u+1)/2\le2u/3$ for $u\ge3$.
+
+The source component with $u$ additional forks has $u+3$ outgoing
+edges. At $u=0$ it has no conflict; at $u=1,2$ it has at most two.
+For $u\ge3$ its number of conflicts is at most
+$\lfloor(u+3)/2\rfloor\le2u/3+4/3$.
+The latter bound covers the small cases as well. Summing over all
+$F=k-2$ forks bounds the total number $R$ of conflicts by
+\[
+ R\le\lfloor2k/3\rfloor.
+\]
+If $K$ is triangle-free, the $u=1$ source component has no conflict,
+since one would make a triangle through the source, fork, and target
+join. The source bound improves to $2u/3+1$, giving
+\[
+ R\le\lfloor(2k-1)/3\rfloor
+ \qquad\text{in the triangle-free case}.
+\]
+
+There are $2t-1$ unused inputs available: the $t$ ordinary inputs and
+$t-1$ additional witnesses. The chosen $t$ ensures $R\le2t-1$ in
+each case. On one incoming edge of each conflicting join insert
+\[
+ \text{new wire}=\text{old wire}\land\text{fresh input},
+\]
+using a different input each time. Insert any remaining inputs by
+such gates in a chain on one original edge. The fresh output names
+split copied wires; they never identify distinct old names. Hence
+all conflicts are repaired without creating new ones, including at
+the two sink gates. The orientation gives a topological gate order.
+
+\emph{The verifier budget and its function.}
+Each attachment has a witness-dependent old input, so all gates are
+witness-dependent. There are $k+2t-1$ gates, every ordinary input
+appears at one gate pin, and all $t$ witnesses are used. Therefore
+$p=0$, $h=b=t$, and
+\[
+ \ell=2q-t=2k+3t-2,\qquad
+ \kappa=\ell-q-b+1=k.
+\]
+Every vertex reaches the unique sink. ANDing along the circuit thus
+gives the conjunction of all inputs, proving the displayed $f,g$.
+Each input is essential by setting all other inputs to one. The
+effective-input lower bound in Lemma~\ref{lem:inputs},
+met by an AND chain, gives $\C(f)=2t-1$ and $\C(g)=t-1$.
+
+\emph{The exact residual kernel.}
+Form the actual consistency incidence graph. A wire with $u$ forks
+after its defining join has $u+1$ uses and one defining incidence.
+Choose its equality splitting to be precisely that fork tree: an
+equality of degree $u+2$ is replaced by $u$ ternary equalities.
+For $u=0$, keep its degree-two equality. The source wire with $u$
+forks has $u+3$ uses; choose its splitting into the source and those
+$u$ forks. Attachments divide these trees into smaller pieces, to
+which the same construction applies. Reversing these splittings
+contracts each equality tree to the actual incidences of one circuit
+wire, verifying that they are permitted choices in
+Lemma~\ref{lem:cubic-reduction}.
+
+Contract the output-one assertion through the output equality into
+the second sink gate. That constraint now has two ports. Contract
+the degree-two equality between the sink gates and then the remaining
+two-port constraint into the first sink gate. Its surviving table
+is the conjunction of the three original incoming bits, at vertex $z$.
+For each additional witness, contract its degree-one equality into
+its attachment constraint, leaving two ports. For example,
+$\OR_y[v=u\land y]=[v\le u]$: the resulting table is retained,
+not replaced by an equality. Ordinary attachments
+already have two ports, since their ordinary inputs are coefficients.
+Contract these two-port constraints and all degree-two wire equalities
+along their original edges. Their updated neighboring tables retain
+the semantic effects of the attachments.
+
+Topologically these operations undo edge subdivisions, the sink tree,
+and attached leaf trees. They leave exactly the marked vertices and
+edges of $K$. No loop or parallel-edge reduction is needed: every
+step is a permitted single-edge contraction and preserves cycle rank.
+Since $K$ is simple and cubic, the reduction terminates there, with
+the stated zero loss and the linear operation cost of the compiler.
+\end{proof}
+
+For triangle-free $K$ with $k=3t$, the parameters are exactly
+\[
+ (p,q,h,b,\ell,\kappa)=(0,5t-1,t,t,9t-2,3t).
+\]
+Thus acyclicity, essential inputs, the critical budget, and zero cycle
+loss do not prevent these kernel topologies. The theorem asserts
+existence of the specified reduction, not that every reduction must
+return $K$. It does not realize the hardness hypothesis of
+Theorem~\ref{thm:critical-structure}: its supplied circuit is
+nonminimal and its projection is easy. Stronger semantic reductions
+or choosing a smaller equivalent verifier can remove the apparent
+structural difficulty.

@@ -1,0 +1,82 @@
+\subsection{The uniform SAT and exact-counting algorithm}
+\label{sec:counting-algorithm}
+
+We now prove the algorithmic guarantee highlighted in
+Section~\ref{sec:algorithm-overview}. The nonuniform theorem used
+synthesis on formal ordinary inputs.
+The all-quantified case has no such step. Its explicit table operations
+also preserve counts, which gives the following algorithmic consequence.
+This statement includes its proof; the unresolved issue in
+Section~\ref{sec:prior-work} is comparison and priority.
+
+\begin{corollary}[Counting by the gate-minus-input budget]
+\label{cor:gate-counting}
+Fix $\delta>0$ and write $\alpha=1/3+\delta$. Given a single-output
+$B_2$ circuit with $s$ gates and $u$ input bits, one can count its
+satisfying inputs in time
+\[
+ \poly_\delta(s+u+1)\,
+ 2^{\min\{b,\alpha(s+1-b)\}},
+\]
+where $b$ is the number of inputs remaining in a normalized output
+cone. In particular, for every fixed $\varepsilon>0$, the time is
+\[
+ \poly_\varepsilon(s+u+1)\,
+ 2^{(1/4+\varepsilon)(s+1)}.
+\]
+The space used is at most polynomial times the same exponential
+factor. A polynomial-space bound is not asserted.
+\end{corollary}
+\begin{proof}
+Prune the output cone and propagate constants and unary redundancies
+without changing the function. Inputs removed from the cone are free;
+their contribution is a final multiplicative factor $2^{u-b}$.
+Constant and designated-input outputs are evaluated directly. For the
+remaining circuit quantify all $b$ inputs, so there are no independent
+signals. Its consistency rank satisfies $\kappa\le s+1-b$.
+
+Replace Boolean OR and AND in the tensor construction by integer
+addition and multiplication. The original tables contain only zeros
+and ones. For each satisfying input, the circuit equations specify
+exactly one gate-value assignment. Incidence equality tables specify
+exactly one set of equal edge values, and their ternary expansions have
+exactly one internal extension. Thus the initial tensor contraction
+counts satisfying inputs, with no spurious multiplicity.
+
+Every reduction in Lemma~\ref{lem:cubic-reduction} is a distributive
+identity, including diagonal loop sums and joint parallel-edge sums.
+It remains valid over the nonnegative integers. More explicitly, a
+reduced table entry is the number of internal edge assignments in its
+contracted region that satisfy the original tables, conditional on its
+boundary. A contraction combines disjoint regions and sums over their
+shared indices, preserving this interpretation. The same invariant
+holds for the frontier entries in Lemma~\ref{lem:frontier}.
+
+There are $O(s+1)$ indices after equality expansion. Each table entry
+is therefore bounded by $2^{O(s+1)}$, so its bit length is $O(s+1)$.
+Integer additions and multiplications have polynomial bit cost; the
+last factor $2^{u-b}$ only shifts the answer. For fixed $\delta$, the
+cited constructive pathwidth theorem and median conversion find the
+required order in polynomial time. The bounded-size graphs below its
+threshold are handled by exhaustive order search, a constant depending
+on $\delta$. The operation count is consequently polynomial times
+$2^{\alpha(s+1-b)}$, with exponential-size frontiers allowed.
+
+Alternatively enumerate the $2^b$ used-input assignments, evaluate the
+circuit, and count the accepting ones. Choose the cheaper proved bound.
+Finally,
+\[
+ \min\{b,\alpha(s+1-b)\}
+ \le\frac{\alpha}{1+\alpha}(s+1),
+ \qquad \frac{\alpha}{1+\alpha}\longrightarrow\frac14.
+\]
+This proves both time estimates and the stated space majorant.
+\end{proof}
+
+Testing whether the count is nonzero decides circuit satisfiability.
+For any fixed $0<\gamma<4$, the bound also gives a running time
+$2^{(1-\Omega_\gamma(1))u}\poly(u)$ when
+$s\le(4-\gamma)u$, after choosing a sufficiently small fixed
+$\varepsilon$. This consequence uses exponential space and the exact
+$B_2$ gate convention. Its numerical comparison with previously
+reported circuit-SAT algorithms deserves particular scrutiny.

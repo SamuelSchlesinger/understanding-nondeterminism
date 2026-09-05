@@ -51,6 +51,13 @@ def check_documents():
     used = set()
     edges = {p: set() for p in docs}
     errors = []
+    for entry in (PROJECT / "README.md", PROJECT / "review-notes/README.md"):
+        for target in re.findall(r"\[[^]\n]+\]\(([^\s)]+)\)", prose(entry.read_text())):
+            if re.match(r"[a-z]+:", target):
+                continue
+            file = target.partition("#")[0]
+            if file and not (entry.parent / unquote(file)).exists():
+                errors.append(f"{entry}: broken publication link {target}")
     for path, text in docs.items():
         definitions = dict(re.findall(r"^\[([^]]+)\]:\s+(\S+)", text, re.M))
         for display, key in re.findall(r"\[([^]\n]+)\]\[([^]\n]+)\]", text):

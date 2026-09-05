@@ -1,0 +1,87 @@
+\section{SAT and exact counting below four gates per input}
+\label{sec:algorithm-overview}
+
+The algorithmic entry point is a restricted-instance improvement over
+exhaustive search. Let $C$ be a single-output Boolean circuit with $u$
+input bits and $s$ internal gates. Work over the full binary basis $B_2$:
+every Boolean function of at most two inputs is a unit-cost gate,
+constants and wiring are free, and fan-out is unrestricted.
+
+\paragraph{Headline guarantee.}
+For every fixed $\varepsilon>0$, the construction counts the satisfying
+assignments of $C$, and therefore decides its satisfiability, in time
+\begin{equation}\label{eq:headline-sat}
+ \boxed{\quad
+ \poly_\varepsilon(s+u+1)\,
+ 2^{(1/4+\varepsilon)(s+1)}.
+ \quad}
+\end{equation}
+The space bound allows the same exponential factor. Consequently, for
+each fixed $0<\gamma<4$, circuits with $s\le(4-\gamma)u$ admit an
+algorithm running in $\poly_\gamma(u)2^{(1-\eta)u}$ for some
+$\eta>0$ depending only on $\gamma$. This beats the $2^u$ enumeration
+bound by an exponential factor. The restriction concerns the gate
+budget in $B_2$, not the number of clauses in a CNF representation.
+
+For example, take $\varepsilon=\gamma/[8(4-\gamma)]$ in
+\eqref{eq:headline-sat}. Then
+\[
+ (1/4+\varepsilon)(s+1)
+ \le (1-\gamma/8)u+(1/4+\varepsilon),
+\]
+so $\eta=\gamma/8$ is an explicit choice. The additive constant is
+absorbed into the prefactor. The positive slack is fixed before the
+input size grows; no exact endpoint exponent with a fixed polynomial
+prefactor is asserted.
+
+\paragraph{Why the running time improves.}
+Normalize the output cone without changing its function, leaving $b$
+used inputs. Each removed input contributes a factor of two to the
+final count. Encode the circuit's gate equations, consistent uses of
+every input and gate value, and the requirement that its output is one
+as a network of small tables. Every satisfying input assignment has
+exactly one extension to the internal values. The network's cycle rank
+$\kappa$ satisfies
+\[
+ \kappa\le s+1-b.
+\]
+Split high-degree equality tables into trees, then contract low-degree
+parts, loops, and parallel edges with exact table identities. A
+nonempty residual simple cubic graph has at most $2(\kappa-1)$
+vertices. The constructive Fomin--H\o ie theorem
+\citep{FominHoie2006}, together with the width conversion proved below,
+gives a vertex order with at most $(1/3+\delta)\kappa+O_\delta(1)$
+edges crossing any frontier. Summing over the frontier assignments
+evaluates the network using integer addition and multiplication.
+Intermediate counts have polynomial bit length.
+
+Choosing between this contraction and enumeration of the $b$ used
+inputs gives the sharper bound
+\begin{equation}\label{eq:headline-sensitive}
+ \poly_\delta(s+u+1)\,
+ 2^{\min\{b,(1/3+\delta)(s+1-b)\}},
+ \qquad \delta>0\text{ fixed}.
+\end{equation}
+Writing $\alpha=1/3+\delta$, the two exponents balance at
+$b=\alpha(s+1)/(1+\alpha)$, where their common value is
+$\alpha(s+1)/(1+\alpha)$. Its gate coefficient approaches $1/4$.
+Section~\ref{sec:consistency-graph} proves the graph construction,
+reductions, and frontier bound; Corollary~\ref{cor:gate-counting}
+proves the uniform count-preserving algorithm and its bit complexity.
+
+\paragraph{Status and scope.}
+This is an asymptotic algorithm with exponential space, derived from
+established width and tensor methods with explicit circuit-specific
+accounting. The repository contains finite checks of supporting
+constructions, not an implementation or benchmark of the complete
+counting algorithm. Historical priority of the precise bound and its
+best-known unrestricted-space status remain unestablished; the
+statement-level comparison is in Section~\ref{sec:prior-work}.
+
+\paragraph{From SAT to understanding nondeterminism.}
+The rest of the manuscript asks what changes when only witness inputs
+are quantified and ordinary inputs remain symbolic. The same
+consistency budget then gives a nonuniform circuit-size exponent
+approaching $1/5$, alongside witness-coverage bounds, necessary
+conditions for strong amplification, and examples separating a
+complicated supplied circuit from an intrinsically hard function.

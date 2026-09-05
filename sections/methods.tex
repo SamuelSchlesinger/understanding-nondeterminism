@@ -1,0 +1,171 @@
+\section{AI-assisted methods, verification, and reproducibility}
+\label{sec:methods}
+
+This manuscript was developed in a user-directed session with an OpenAI
+Codex agent, described by the session as based on GPT-6. The user set
+the mathematical objective, requested an editable \LaTeX{} note, and
+then asked for substantive new theory integrated with a pedagogical
+account of prior results. The model label records the provided session
+identity; it is not an independent characterization of the deployed
+model or its training.
+
+\paragraph{Tools and organization.}
+The agent worked in a local macOS workspace with a zsh shell, local file
+editing and Python execution, web retrieval of primary papers, a
+\LaTeX{} toolchain, and PDF rendering. It used an author--review--revise
+workflow with separate child-agent mandates for structural proofs,
+literature comparison, and adversarial examples. A preliminary reviewer
+critiqued the research decomposition. The root agent developed the
+coverage construction and integrated the manuscript; further reviewers
+examined the analytical proofs and actual implementations under
+independently framed prompts. The agents shared a filesystem but were
+assigned distinct authoring files. The initial research phase involved no publication, submission, or
+external correspondence. A subsequent user-directed publication pass
+reframed the manuscript around its SAT algorithm and assembled the
+manuscript, supporting corpus, and reproducibility workflow as the
+public \texttt{understanding-nondeterminism} repository.
+
+This organization supplies additional opportunities to detect errors;
+it does not turn agreement between agents into mathematical evidence.
+The agents can share training-related blind spots. The mathematical
+justifications are the complete arguments in the text and the precise
+published theorems they invoke, rather than the reviewers' confidence.
+
+\paragraph{How candidate results were developed.}
+The initial note combined enumeration, Shannon--Lupanov synthesis,
+fixed witness covers, and a forest simulation obtained by fixing shared
+vertices. Two limitations guided the next phase. First, a total count
+of shared values ignores how they are arranged. This led to the
+consistency graph, degree reductions with explicit tables, a cubic
+graph, and the pathwidth-based improvement. Second, optimizing witness
+coverage separately from sharing charges for computations that can be
+reused. This led to selected-restriction occupancies, a correction for
+uncovered positive inputs, and a single expected-cost argument.
+
+Each candidate was written with its model and quantifiers before
+integration. The literature comparison separated existing elimination,
+synthesis, and graph-width tools from the proposed numerical and
+distributional consequences. Explicit families then tested what the
+new bounds explain that the old guarantee expressions miss. Counterexamples
+prevented stronger but false interpretations, such as choosing a
+different optimal witness cover independently at each gate.
+
+The final research phase focused on the critical three-way balance.
+A finite stability inequality was proved before taking fixed-slack
+limits, yielding necessary input, cycle-loss, and width conditions.
+An independent construction then realized cubic kernels with nearly
+critical supplied budgets. Its AND-only function permitted exact
+minimum-size calculations, exposing the difference between the supplied
+representation and intrinsic verifier complexity. Separate analytical
+review checked the conflict budget, sink construction, equality
+splitting, and legal contractions. The final source follow-up retrieved
+Nurk's full Russian preprint and additional text of Broering--Lokam;
+it narrowed access gaps without establishing priority.
+
+\paragraph{When experiments were useful.}
+The user explicitly required that experiments be used only when useful
+and never as a substitute for analytical proof of an asymptotic theorem.
+The finite checks here serve two purposes: testing circuit-producing
+implementations against independent direct evaluation, and checking
+exact arithmetic in worked finite instances. There was no empirical
+search for a circuit lower bound, no fitted asymptotic exponent, and
+no inference of novelty from experiment counts.
+
+The checks found two concrete implementation omissions. The sampled
+compiler initially deduplicated full witnesses but not their output
+restrictions; this could charge too many output OR gates. It now
+deduplicates those restrictions explicitly. A reviewer also found that
+the tensor compiler omitted the zero-gate witness-output case already
+handled in the proof. That branch and designated-input checks were
+added. These findings justify the checks' role without extrapolating
+their conclusions beyond their actual domains.
+
+\begin{samepage}
+In the exhaustive circuit checks, an encoding consists of one or two
+topologically ordered binary truth-table gates, with repeated input
+pins allowed and the final gate designated as output. There is one
+ordinary and one witness input. This is the precise 9,280-case domain.\par
+\end{samepage}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.24\linewidth}X@{}}
+\toprule
+Artifact & Completed finite checks and their scope\\
+\midrule
+Forest and distribution checks & All 9,280 circuit encodings described
+above; 2,000 seeded circuits and three consistency fixtures. Separately,
+the exact projection distribution for all 65,536 relations with
+$(n,m)=(2,2)$.\\
+Coverage compiler & 362 sparse support sets, 896 circuit/sample pairs,
+and 140 exact rational occupancy and expected-exception cases.\\
+Tensor compiler & Five zero-gate designated-input cases, the 9,280
+small circuits, 600 seeded circuits, and 140 symbolic tensor networks
+exercising loops, parallel edges, equality splitting, and median ties.\\
+Worked families & 25,600 input/witness pairs, support counts for
+$k=3,\ldots,10$, finite distribution comparisons, and 141 sparse
+correction instances.\\
+Kernel realization & 3,729 gate-list and graph constructions,
+72,401 legal degree-one/two graph contractions, and exact retained
+labeled kernels. Seven representatives also received exhaustive
+verifier truth-table and symbolic projection checks.\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+These enumerations establish agreement of the tested constructions on
+their stated finite domains. They do not establish minimum circuit
+complexity except where a separate analytical lower bound is given.
+In particular, the tensor checker does not implement or test the
+Fomin--H\o ie asymptotic pathwidth theorem; it checks the local
+reductions and contraction on supplied decompositions. The $1/5$
+rate follows analytically from that cited theorem and the proved
+conversion, not from the finite graphs tested.
+The tensor checker evaluates Boolean projections. The integer-counting
+corollary was checked analytically; no implementation or timing study
+of its full algorithm is claimed.
+
+The new realization checker addresses a specific possible mismatch:
+a graph sketch might fail to be an equality splitting of the actual
+circuit's incidence graph. It verifies that correspondence and the
+legality of the graph reductions. Its finite graph domain contains
+every perfect matching disjoint from a fixed Hamiltonian cycle on
+$4,6,8,10,12$ labeled vertices, 42 specified bridged block chains,
+and 32 seeded 2-connected cubic graphs. The 3,729 graph checks are
+distinct from the seven semantic checks. The general realization and
+critical-structure theorems are justified by their analytical proofs.
+
+The user's suggestion of a cheaper aggregate led to the
+characteristic-two fingerprint investigation in
+Appendix~\ref{sec:aggregation}. It was assessed analytically: a
+polynomial zero bound, a simultaneous hardwiring argument, exact
+cycle accounting, and a linear-algebra obstruction suffice. Separate
+mathematical and source reviews checked this appendix. No additional
+experiment was needed, and no improved general exponent resulted.
+
+\paragraph{Reproducibility.}
+The manuscript and research notes are distributed under
+\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0};
+the code and build automation use the MIT license. The
+\href{https://github.com/SamuelSchlesinger/understanding-nondeterminism}{public repository}
+contains the license texts, citation metadata, and automated checks.
+
+The entry point is \texttt{main.tex}. It includes the files in
+\texttt{sections/}. The file \texttt{references.bib} has an individual entry
+for each cited work. The \texttt{research/} directory contains the
+full statement matrix, supporting derivations, examples, and scripts.
+The review findings are retained in \texttt{review-notes/}.
+\begin{samepage}
+Run
+\begin{quote}\ttfamily
+make check\\
+make pdf
+\end{quote}
+\end{samepage}
+from the project root. The check scripts use only the Python standard
+library. The PDF uses the installed \LaTeX{} packages declared in
+the source. Seeds and exact finite domains are recorded in the scripts.
+Compilation checks references and typography mechanically; rendered
+pages are inspected separately because a successful build does not
+establish legibility. The research record distinguishes completed
+checks from pending work and retains the unresolved literature
+comparison described in Section~\ref{sec:prior-work}.

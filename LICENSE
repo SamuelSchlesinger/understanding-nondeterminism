@@ -1,0 +1,23 @@
+Understanding Nondeterminism
+Copyright (c) 2026 Samuel Schlesinger
+
+This repository uses two licenses according to file type:
+
+- Software, including all .py files, Makefile, .github/ workflow files,
+  .gitignore files, and machine-readable expected-output .txt records:
+  MIT License. See LICENSES/MIT.txt.
+- Manuscript and documentation, including main.tex, main.pdf, sections/*.tex,
+  references.bib, all Markdown research and review notes, README.md, and
+  CITATION.cff: Creative Commons Attribution 4.0 International (CC BY 4.0).
+  See LICENSES/CC-BY-4.0.txt and
+  https://creativecommons.org/licenses/by/4.0/.
+
+The license texts themselves are reproduced as published. Third-party works
+cited or linked in the manuscript retain their own licenses; citing a work
+here does not relicense it.
+
+For attribution, credit Samuel Schlesinger, "Understanding Nondeterminism:
+Faster SAT and Exact Counting for Small Circuits", link to
+https://github.com/SamuelSchlesinger/understanding-nondeterminism,
+provide the CC BY 4.0 license link, and indicate whether changes were made.
+The manuscript's methods appendix documents the AI-assisted research process.

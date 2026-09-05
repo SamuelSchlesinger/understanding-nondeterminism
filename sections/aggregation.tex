@@ -1,0 +1,142 @@
+\section{Weaker aggregation: a further direction}
+\label{sec:aggregation}
+
+Exact integer counting supplies more information than existential
+projection needs. However, the earlier compiler already works over
+Boolean OR and AND. Changing its integer entries to bits alone changes
+the polynomial overhead, not the width exponent. A useful alternative
+aggregate must enable a different computation. The following standard
+polynomial-identity-testing route makes that target precise.
+
+Discard unused inputs and write $a,b$ for the used ordinary and witness
+counts, with $b\ge1$. Over a field $F$ of characteristic two, define
+\[
+ P_x(Z_1,\ldots,Z_b)
+   =\sum_{y\in\B^b} f(x,y)\prod_{i:y_i=1}Z_i.
+\]
+Distinct witnesses contribute distinct monomials, each with coefficient
+one. Hence $P_x$ is the zero polynomial exactly when $g(x)=0$, and
+its total degree is at most $b$. In contrast, unweighted parity can
+vanish on a nonempty fiber: the two witnesses $00,01$ contribute
+$1+Z_2$, which vanishes at $Z_2=1$ but is not the zero polynomial.
+
+\begin{proposition}[Fingerprint transfer to an exact circuit]
+\label{prop:fingerprint}
+Let $F=\mathbb F_{2^\lambda}$ have size $Q>b$. Suppose a Boolean
+circuit of size $T$ evaluates the $\lambda$-bit field value $P_x(z)$
+from $x$ and $z\in F^b$. If an integer $t\ge1$ satisfies
+\[
+ 2^a(b/Q)^t<1,
+\]
+then
+\[
+ \C(g)\le t(T+\lambda)-1.
+\]
+In particular, $Q\ge2b$ permits $t=a+1$. If a division-free
+arithmetic circuit of $A$ additions and multiplications evaluates
+$P_x(z)$, then $T=O((A+1)\lambda^2)$ suffices.
+\end{proposition}
+\begin{proof}
+The polynomial zero bound gives
+$\Pr_z[P_x(z)=0]\le b/Q$ whenever $P_x$ is nonzero
+\citep{Schwartz1980}. For completeness, a nonzero polynomial of
+total degree $d$ has this bound $d/Q$: view it as a univariate
+polynomial of degree $j$ in the last variable. Its leading coefficient
+has degree at most $d-j$; by induction it vanishes with probability
+at most $(d-j)/Q$. Otherwise the univariate polynomial has at most
+$j$ roots. The union bound proves the claim.
+
+Choose $t$ independent evaluation points. For any positive input, the
+probability that all evaluations vanish is at most $(b/Q)^t$.
+A union bound over at most $2^a$ inputs proves that some fixed list
+works for every $x$. Hardwire that list. OR the $\lambda$ output
+bits of each evaluation and then OR the $t$ results, costing
+$tT+t(\lambda-1)+(t-1)$ gates. A negative input always gives zero,
+so the resulting circuit is exact on both kinds of input.
+
+In a fixed polynomial basis for $F$, addition costs $O(\lambda)$
+binary XOR gates. Schoolbook polynomial multiplication followed by
+reduction modulo a fixed irreducible polynomial costs
+$O(\lambda^2)$ gates. Field constants are fixed bit strings.
+This proves the arithmetic-circuit conversion.
+\end{proof}
+
+The fixed list depends on the verifier; finding it is not part of
+the nonuniform conclusion. For a given input, random evaluations
+instead give a uniform one-sided error test when evaluation is
+uniformly efficient. For $Q\ge2b$, the same argument uses $t=h+1$ when only the
+$h$ formal independent signals enter the evaluator, with their $p$
+preprocessing gates shared. Thus a faster field evaluator would
+transfer to a faster exact projection circuit with only polynomial
+overhead in the used-input counts.
+
+\paragraph{The tags preserve the cycle budget.}
+The consistency construction evaluates $P_x$ if it is interpreted
+over $F$ and each witness variable receives a unary weight equal to
+$1$ at zero and $Z_i$ at one. Its gate-value and equality extensions
+remain unique. Attaching a unary weight tensor adds one vertex and
+one edge, preserving the cycle rank. Equality splitting and the exact
+local contractions remain valid over $F$. Consequently weighting
+does not worsen the cycle exponent. Reusing the existing contraction
+order merely recovers that exponent; an improvement requires an
+algebraic evaluation method that does less work.
+
+This differs from a generic implementation of witness isolation by
+dense affine constraints, as in the classical randomized isolation
+approach \citep{ValiantVazirani1986}. Directly adding $k$ dense parity
+checks can cost $O(kb)$ gates. Any fine-grained use of that construction
+must account for the actual added gates and consistency constraints.
+Unary tags impose no such increase in cycle rank.
+
+\begin{proposition}[No short universal linear fingerprint]
+\label{prop:universal-fingerprint}
+Fix a map $w:\B^b\to\mathbb F_2^L$, independently of a relation.
+If $\sum_{y\in W}w(y)\ne0$ for every nonempty
+$W\subseteq\B^b$, then $L\ge2^b$.
+\end{proposition}
+\begin{proof}
+The $2^b$ vectors $w(y)$ must be linearly independent over
+$\mathbb F_2$. Otherwise a nonzero dependence, whose coefficients
+are zeros and ones, supplies a nonempty zero-sum subset.
+\end{proof}
+
+Concatenating several field evaluations is also such a binary linear
+fingerprint. The preceding transfer avoids this obstruction because
+its list is chosen for one verifier's at most $2^a$ fibers, not for
+all subsets of the witness universe. This is a limitation of a fixed
+universal linear aggregate, not a circuit lower bound or a lower
+bound for a restricted class of small verifiers.
+
+\paragraph{A classical example where the weaker aggregate changes the algorithm.}
+Let $X=(x_{ij})$ encode a bipartite graph on $r+r$ vertices, and let
+the witness be a permutation $\sigma$ certifying a perfect matching.
+The verifier checks distinct column choices and
+$\AND_i x_{i,\sigma(i)}$. Binary column choices give
+$b=O(r\log r)$ witness bits and an $O(r^2\log r)$-gate verifier:
+compare every pair of columns and use a multiplexer in each row.
+Out-of-range column codes are rejected.
+
+Assign a separate tag $Z_{ij}$ to each potential edge. In
+characteristic two,
+\[
+ \det(x_{ij}Z_{ij})
+   =\sum_{\sigma\in S_r}\prod_i x_{i,\sigma(i)}Z_{i,\sigma(i)}.
+\]
+All permutation signs equal one. Distinct matchings give distinct
+monomials, so the polynomial is nonzero exactly when a perfect
+matching exists. Its degree is $r$. Determinants over a finite field
+have polynomial-size Boolean evaluation circuits: perform Gaussian
+elimination with explicit zero-pivot branches and compute nonzero
+inverses by repeated squaring. All loop lengths are polynomial in
+$r$ and $\log Q$. Applying the proof of Proposition~\ref{prop:fingerprint}
+with degree $r$, $a=r^2$, $Q\ge2r$, and $t=r^2+1$ gives an exact
+polynomial-size projection circuit.
+
+This is the classical algebraic matching phenomenon
+\citep{MulmuleyVaziraniVazirani1987}, not a new matching algorithm.
+Exact integer counting gives the permanent, whose computation on
+zero-one matrices is $\#\mathsf P$-complete \citep{Valiant1979}.
+The example explains what a successful weaker aggregate can accomplish;
+it supplies no unconditional separation of polynomial time from
+$\#\mathsf P$. For arbitrary $B_2$ verifiers, we have not found a
+field evaluator that improves the proved $1/5$ projection rate.

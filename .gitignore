@@ -1,2 +1,20 @@
+# LaTeX intermediates; main.pdf is the versioned reading copy.
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+
+# Python and local tools.
 __pycache__/
-*.pyc
+*.py[cod]
+.venv/
+.DS_Store
+.env
+.env.*
+tmp/

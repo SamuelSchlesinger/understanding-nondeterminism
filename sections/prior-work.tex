@@ -1,0 +1,163 @@
+\section{Relation to prior work and the scope of the contributions}
+\label{sec:prior-work}
+
+The mechanisms behind the proofs have substantial histories. The purpose
+of this comparison is to identify the quantitative conclusions and
+integrations proved here, while attributing the tools on which they rest.
+It is a statement-level comparison, not a claim that a keyword search
+establishes priority.
+
+\paragraph{Elimination and symbolic ordinary inputs.}
+Bucket elimination and its combinations with conditioning are established
+methods \citep{Dechter1999}. The generalized distributive law applies
+marginalization to products in a commutative semiring \citep{Aji2000}.
+Taking that semiring to be Boolean functions of $x$, with pointwise OR
+and AND, explains why ordinary inputs can remain symbolic. Storing each
+function as a circuit pointer makes a semiring operation cost one gate.
+Thus symbolic elimination is an application of an existing principle.
+The work in Section~\ref{sec:consistency-graph} is its concrete
+$B_2$ implementation, consistency budget, cubic reduction, and exact
+exponential-rate accounting.
+
+\paragraph{Knowledge compilation has stronger target restrictions.}
+DNNF supports efficient existential forgetting
+\citep{DarwicheMarquis2002}. Bounded-treewidth Boolean circuits can be
+compiled into structured deterministic DNNFs with singly exponential
+dependence on width \citep{Amarilli2020}. Here ``deterministic'' means
+that alternatives at an OR gate are mutually exclusive. An ordinary
+deterministic Boolean circuit has no such restriction. Forgetting may
+lose that property while still yielding a perfectly valid target for
+this note. Results retaining stronger structure through quantification,
+such as those of \citet{CapelliMengel2019}, therefore solve a different
+representation problem. Their costs and lower bounds are not lower
+bounds on unrestricted $\C(g)$.
+
+Full circuit treewidth, treewidth after deleting input vertices, and
+the consistency graph used here are also different parameters. Prior
+bounded-treewidth circuit-SAT work explicitly uses an input-deleted
+graph \citep{Lokshtanov2018}. Morizumi's structural simulation uses
+layered circuit width and gives size
+$2^{O((w+\log s)\log s)}$ \citep[Theorem 4]{Morizumi2018}; that width
+is not interchangeable with our $\kappa$ or cutwidth.
+
+\paragraph{Graph width and tensors.}
+The pathwidth theorem supplying the $1/6$ coefficient is due to
+\citet{FominHoie2006}. The conversion between pathwidth and subcubic
+cutwidth is also known through graph-search relations; an explicit
+modern restatement appears in the proof of Lemma 16 of
+\citet{Bodlaender2025}. Our direct median proof makes the additive
+constant and resulting exponential base transparent.
+Width-controlled tensor contraction is established
+\citep{MarkovShi2008}, including Boolean checking circuits and
+counting applications \citep{Johnson2013}. The specific quantitative
+chain here is
+\[
+ h+b+\kappa\le q+1,
+ \qquad N\le2\kappa,
+ \qquad w\le N/6+o(N),
+ \qquad \C(g)\le p+O(q2^w).
+\]
+Together with enumeration and nonuniform synthesis, it yields the
+$1/5$ projection rate. None of the inspected statements asserts this
+exact combined formula. This is the boundary of the comparison, not
+a proof that no equivalent earlier result exists.
+
+There are also direct antecedents for the elementary tensor steps.
+\citet{BiamonteMortonTurner2015} expand each COPY tensor into two
+consistent choices and evaluate the resulting trees, obtaining a
+bound polynomial in the representation size times $2^c$ for $c$
+COPY tensors in their canonical representation. This is the mechanism
+behind the forest-cut baseline. Its mixed-input specialization here
+leaves ordinary inputs symbolic and gives $r\le s+1-a-b$.
+\citet{BeaudrapKissingerMeichanetzidis2021} explicitly switch between
+decision and counting semirings and study exact tensor rewrites.
+\citet{Kourtis2019} give planar contraction guarantees and empirical
+studies of general cubic instances. The latter experiments do not
+supply a worst-case gate-count exponent.
+\citet{DudekDuenasOsorioVardi2020} give exact weighted-counting tensor
+representations and tree factorizations of suitable high-degree tensors.
+Maximum intermediate rank controls storage; our sequential frontier
+calculation separately charges the operations needed for the time bound.
+These sources reinforce that
+the width-and-cycle accounting, rather than the general use of tensors
+or COPY expansion, is the quantitative step to assess here.
+
+Appendix~\ref{sec:aggregation} likewise uses established polynomial
+identity testing and algebraic matching. Its transfer statement makes
+precise how a cheaper weighted evaluator would imply a smaller exact
+projection circuit, while unary tags preserve the cycle budget.
+It is an avenue for improving the main bound, not an additional
+improvement of its exponent.
+
+\paragraph{Coverage, penalties, and sparse correction.}
+The function $H\mapsto\sum_vN_v(H)+N_{\mathrm{out}}(H)$ is a
+monotone submodular cost: each term counts covered restriction keys.
+Selecting witness columns with penalties for uncovered positive rows
+therefore fits an existing submodular-cost set-cover framework
+\citep{Wang2015}. No approximation guarantee from that framework
+is imported here, and an algorithm polynomial in an explicit incidence
+matrix need not be polynomial in a succinct verifier circuit.
+
+Optimizing only minimum row mass has an elementary fractional-cover
+interpretation. If $g$ is nonzero and $\tau^*$ is its fractional
+witness-cover number, then
+\[
+ \max_\mu\min_{x:g(x)=1}\mu(W_x)=1/\tau^*.
+\]
+Indeed, divide a distribution by its minimum row mass to obtain a
+fractional cover, and normalize a fractional cover by its total weight
+for the converse. The occupancy objective additionally prices
+collisions on internal supports. The examples in
+Section~\ref{sec:row-mass-gap} prove that even identical row-mass
+vectors leave an exponential ambiguity in that price.
+
+Circuit synthesis for functions with few positive inputs is likewise
+classical; see \citet{Redkin2004,Redkin2021}. The block construction
+in Lemma~\ref{lem:sparse} is a convenient all-range majorant, not a
+uniformly optimal sparse-synthesis theorem. In particular, the cited
+literature gives linear-size bounds in some ranges with a logarithmic
+number of positive inputs. The contribution of
+Theorem~\ref{thm:occupancy} is the joint inequality using the same
+sample for shared local computation and exact sparse correction,
+together with the distribution tradeoffs and hardness consequences
+proved from it.
+
+\paragraph{The uniform counting consequence and its comparison.}
+Corollary~\ref{cor:gate-counting} makes the all-quantified consequence
+explicit. It proves count-preserving reductions, polynomial bit costs,
+and a fixed-$\varepsilon$ running-time bound with exponential rate
+approaching $1/4$ in gate count. This uniform consequence is separate
+from the synthesis step in the nonuniform projection theorem.
+Its proof does not establish a claim to a previously best SAT algorithm.
+
+The inspected branching literature records Nurk's general
+Circuit-SAT bound $O(2^{0.4058s})$ \citep{Nurk2009} and Savinov's
+improvement to $O(2^{0.389667s})$, presented by
+\citet{Lialina2020}, and the nontrivial $B_2$ counting threshold
+below $3n$ gates of \citet{GKST2018}. Width-based dynamic programming
+uses exponential space, whereas depth-first branching can have a
+different space cost; width-based SAT time--space tradeoffs are
+studied explicitly by \citet{Allender2014}. The differing space
+costs do not, by themselves, establish whether the numerical
+consequence is new or explain its absence from particular benchmark
+discussions. For sufficiently small fixed $\varepsilon$, the proved
+counting exponent is smaller than these particular displayed decision
+exponents. This arithmetic comparison does not establish historical
+priority or the best unrestricted-space running time. The precise
+combined result may be a previously known consequence of width-based
+methods; the source comparison has not resolved that question.
+
+\paragraph{What is established here.}
+The displayed proofs establish the consistency-graph simulation and
+its $1/5$ rate, the necessary critical structure, the exact kernel
+realization with nonminimal verifiers, the occupancy--alteration bound,
+the quantitative sparse-fiber population, the all-quantified counting
+consequence, and the worked separations between compilation
+guarantees. The realization begins with the classical $st$-numbering
+property and separately proves its repeated-input repair budget and
+exact retained graph. It does not make a claim about the kernels of
+minimum verifiers. The ingredients attributed above are established prior
+methods. Priority for the precise combined statements is unestablished
+beyond the documented comparison. No unrestricted exponential lower
+bound, exact optimal exponent, or resolution of the remaining hard
+range is claimed.

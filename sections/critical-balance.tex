@@ -1,0 +1,132 @@
+\subsection{What critical amplification would force}
+\label{sec:critical-balance}
+
+The coefficient $1/5$ comes from balancing three upper bounds.
+Near equality therefore forces several structural conditions
+simultaneously. The following statements concern a normalized circuit
+with $q\ge1$ and a witness-dependent gate as output, using the notation
+of Section~\ref{sec:consistency-graph}.
+
+\begin{lemma}[Finite stability of the three-way balance]
+\label{lem:finite-stability}
+Fix $\delta>0$, put $\alpha=1/3+\delta$, and choose $A_\delta\ge1$
+large enough for
+\[
+ \C(g)\le p+A_\delta(q+1)2^{\min\{h,b,\alpha\kappa\}}.
+\]
+If $t\ge0$ and $\C(g)\ge p+A_\delta(q+1)2^t$, then
+\[
+ \Delta=q+1-(2+1/\alpha)t\ge0,
+\]
+and there are $e_h,e_b,e_\kappa\ge0$ satisfying
+\[
+ h=t+e_h,\qquad b=t+e_b,\qquad
+ \kappa=t/\alpha+e_\kappa,\qquad
+ e_h+e_b+e_\kappa\le\Delta.
+\]
+\end{lemma}
+\begin{proof}
+Comparing the two size inequalities forces
+$h,b,\alpha\kappa\ge t$. Subtract these lower bounds from
+$h+b+\kappa\le q+1$.
+\end{proof}
+
+This elementary lemma is useful because it preserves the fixed-$\delta$
+constant before any limit is taken. Its asymptotic consequence also
+constrains the residual graph, beyond the original cycle count.
+
+\begin{theorem}[Necessary structure at the critical gate budget]
+\label{thm:critical-structure}
+Consider a family with $m\to\infty$ declared witness bits, normalized
+size $s=p+q$, and
+\[
+ s+1=(5+o(1))m,\qquad \log\C(g)\ge m-o(m).
+\]
+Let $a$ be the number of used ordinary inputs. Then
+\begin{align*}
+ p&=o(m),& q&=(5+o(1))m,\\
+ a,h,b&=(1+o(1))m,& \kappa&=(3+o(1))m.
+\end{align*}
+For every choice of legal equality splitting and reductions in
+Lemma~\ref{lem:cubic-reduction}, the resulting kernel $K$ is
+eventually nonempty and satisfies
+\begin{align*}
+ |V(K)|&=(6+o(1))m,& \kappa-\kappa(K)&=o(m),\\
+ \operatorname{cw}(K)&=(1+o(1))m,&
+ \operatorname{pw}(K)&=(1+o(1))m.
+\end{align*}
+Here cutwidth and pathwidth mean their minimum over all orders and
+decompositions. No hard family satisfying the hypotheses is asserted.
+\end{theorem}
+\begin{proof}
+Since $p=O(m)$ whereas $\C(g)\ge2^{m-o(m)}$,
+$\log(\C(g)-p)\ge m-o(m)$. For each fixed $\delta>0$,
+Theorem~\ref{thm:fifth} therefore gives
+\[
+ h\ge m-o(m),\qquad b\ge m-o(m),\qquad
+ \kappa\ge m/\alpha-o(m).
+\]
+The prefactor contributes only $O_\delta(\log m)$ to the logarithm.
+Using $p+h+b+\kappa\le s+1$, we obtain
+\[
+ \limsup \frac{p}{m}\le3-1/\alpha,\qquad
+ \limsup \frac{h}{m},\ \limsup\frac{b}{m}\le4-1/\alpha.
+\]
+These inequalities hold for every fixed $\delta$. Letting $\delta$
+tend to zero after taking the limits proves $p=o(m)$ and
+$h/m,b/m\to1$. The budget and the fixed-$\delta$ lower bounds
+then give $\kappa/m\to3$, and $q/m\to5$ follows from $s=p+q$.
+
+To relate $a$ to $h$, note first that $h\le a+p$. In the undirected
+graph on the $a$ ordinary inputs and $p$ independent gates, every
+connected component contains an interface signal, because every
+vertex is in the output cone. If there are $c$ components, then
+$c\le h$, and counting edges gives
+$a+p-c\le2p$. Thus $a\le p+h$, so $|a-h|\le p$ and $a/m\to1$.
+
+Fix any sequence of legal reductions along the family. An empty
+kernel would give $\C(g)=O(s)$, so eventually it is nonempty.
+Write $N=|V(K)|$. The finite compiler bound, applied to an order
+of minimum cutwidth, gives
+\[
+ \C(g)\le p+400(q+1)2^{\operatorname{cw}(K)},
+ \qquad \operatorname{cw}(K)\ge m-o(m).
+\]
+The cutwidth lower bound and $\operatorname{cw}(K)\le3N/2$ imply
+$N\to\infty$. On the other hand $N\le2(\kappa-1)\le6m+o(m)$. For every fixed
+$\eta>0$, the cubic pathwidth theorem and
+Lemma~\ref{lem:median-width} give, for sufficiently large $N$,
+\[
+ \operatorname{cw}(K)\le\operatorname{pw}(K)+2
+       \le(1/6+\eta)N+2.
+\]
+Hence $\liminf N/m\ge1/(1/6+\eta)$ for every $\eta>0$, proving
+$N/m\to6$. The cubic identity $\kappa(K)=N/2+1$ gives the cycle
+loss. The same inequalities sandwich each width between $m-o(m)$
+and $m+o(m)$. All constants depend only on the fixed slack, so this
+argument applies to any selected legal reduction sequence.
+\end{proof}
+
+There is little unused fanin capacity in such a family. If $r$ counts
+independent-signal input pins of the dependent gates, with multiplicity,
+and $U=2q-(\ell+r)$, then
+\[
+ q+1-h-b-\kappa=U+(r-h)=o(m).
+\]
+Both terms are nonnegative. Thus only $o(m)$ input slots are missing
+from binary gates, and ordinary signals have only $o(m)$ repeated
+uses at the interface. This concerns distinct signals, not semantic
+independence of their values.
+
+\paragraph{Combining the structural and witness conditions.}
+The hypotheses hold whenever $s+1=(5+o(1))m$ and
+$\C(g)\ge T=2^m(s+1)/L$ with $\log L=o(m)$.
+Corollary~\ref{cor:sparse-population} then also forces
+$\Omega((T/n)\log(2+T/n))$ positive ordinary inputs with $O(nL)$
+declared witnesses. Removing the $m-b$ unused witness bits divides
+each positive fiber and this threshold by exactly $2^{m-b}$;
+the two witness conventions must be kept consistent.
+Enumeration already gives $m-b\le\log L$ under this amplification
+hypothesis. These are simultaneous necessary conditions. Large
+width, balanced budgets, and sparse fibers alone do not establish
+a lower bound on $\C(g)$.

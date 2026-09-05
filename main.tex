@@ -1,0 +1,947 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,mathtools}
+\usepackage{newpxtext,newpxmath}
+\usepackage{microtype}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,patterns}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,
+  urlcolor=blue!45!black]{hyperref}
+\usepackage{bookmark}
+\hypersetup{pdftitle={Understanding Nondeterminism: Faster SAT and Exact Counting for Small Circuits},
+  pdfauthor={Samuel Schlesinger},
+  pdfsubject={Restricted-instance SAT algorithms and circuit nondeterminism}}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Understanding nondeterminism}
+\fancyhead[R]{\small Working manuscript}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\emergencystretch}{1.5em}
+\setlist{itemsep=3pt,topsep=5pt}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{question}[theorem]{Open question}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\B}{\{0,1\}}
+\newcommand{\C}{\mathrm{C}}
+\newcommand{\NP}{\mathsf{NP}}
+\newcommand{\Ppoly}{\mathsf{P}/\mathrm{poly}}
+\newcommand{\poly}{\operatorname{poly}}
+\newcommand{\OR}{\bigvee}
+\newcommand{\AND}{\bigwedge}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\mathbb{P}}
+\DeclareMathOperator{\fanin}{fanin}
+\DeclareMathOperator{\fanout}{fanout}
+
+\title{Understanding Nondeterminism:\\
+  Faster SAT and Exact Counting\\
+  for Small Circuits}
+\author{Samuel Schlesinger}
+\date{September 5, 2026}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+\begin{abstract}
+We derive a SAT and exact-counting algorithm that beats exhaustive
+search for single-output Boolean circuits with $u$ inputs and
+$s\le(4-\gamma)u$ gates, for every fixed $0<\gamma<4$, over the
+full binary basis $B_2$ with unrestricted fan-out. For each fixed
+$\varepsilon>0$, its running time is
+$\poly_\varepsilon(s+u+1)2^{(1/4+\varepsilon)(s+1)}$, allowing
+exponential space. The sharper exponent is
+$\min\{b,(1/3+\delta)(s+1-b)\}$ for fixed $\delta>0$, where $b$
+counts the inputs in a normalized output cone. The proof encodes
+consistent circuit values as tables, preserves exact counts through
+cubic reduction, and combines the Fomin--H\o ie pathwidth theorem
+with frontier contraction and input enumeration.
+
+The same consistency budget explains when existential projection
+$g(x)=\exists y\,f(x,y)$ has a small deterministic circuit.
+For an $s$-gate verifier, we prove
+$\C(g)=O_\varepsilon((s+1)2^{(1/5+\varepsilon)(s+1)})$.
+We derive necessary structure for near-full amplification at the
+critical gate budget and realize nearly critical supplied budgets
+with easy projections, exposing the role of nonminimal verifiers.
+A joint witness-sampling and shared-computation bound gives further
+improvements, illustrated by analytical families.
+
+The algorithmic improvement is over exhaustive search on the stated
+restricted instances. Historical priority and best-known
+unrestricted-space status of the precise bound remain unestablished.
+The full counting algorithm is not implemented or benchmarked here;
+the methods appendix records the AI-assisted workflow and the finite
+checks of supporting constructions.
+\end{abstract}
+
+\clearpage
+\setcounter{tocdepth}{1}
+\tableofcontents
+\clearpage
+
+\input{sections/algorithm-overview}
+
+\section{The question and its quantifiers}
+
+We study
+\[
+ f:\B^{n+m}\longrightarrow\B,
+ \qquad
+ g(x)=\OR_{y\in\B^m}f(x,y).
+\]
+Circuit complexity measures the size of the \emph{smallest} circuit for
+a function. It does not measure the cost of discovering that circuit.
+In particular, a circuit for $g$ may exploit facts about $f$ that are
+expensive to discover algorithmically.
+
+\paragraph{Model.}
+Unless explicitly stated otherwise, circuits are finite directed acyclic
+graphs over the full binary basis $B_2$: every Boolean operation of at
+most two inputs is available at unit cost. Constants and input/output
+wiring are free; fan-out is unrestricted. The number of internal gates
+is the size. Write $\C(h)$ for minimum size and
+\[
+ M_n=\max_{h:\B^n\to\B}\C(h).
+\]
+Changing to any fixed complete bounded-fan-in basis changes size by
+constant factors. Exact constants in gate-counting results, including
+the limiting coefficient $1/5$ in our size-dependent exponent, are basis-specific.
+All logarithms are base two, except $\ln$. Comparisons with $2^n/n$
+assume $n\ge2$.
+
+\begin{definition}[Worst-case projection complexity]
+For nonnegative integers $n,m,s$, let
+\[
+ D(n,m,s)=\max\left\{\C(\exists y\,f(x,y)):
+                 f:\B^{n+m}\to\B,\ \C(f)\le s\right\}.
+\]
+Equivalently, if $N_m(h)$ is the minimum complexity of a verifier for
+$h$ using at most $m$ witness bits, then
+$D(n,m,s)=\max\{\C(h):N_m(h)\le s\}$.
+\end{definition}
+
+The budget formulation avoids requiring a verifier to have exactly
+some prescribed minimum complexity. Unused witness bits are allowed,
+so $D$ is nondecreasing in $m$ and $s$. Nevertheless, adding unused
+witnesses cannot create an intrinsic hardness amplification.
+
+There is no lower bound of the form $\C(g)\gtrsim2^m\C(f)$ for
+\emph{every} small verifier. Even requiring every input to be essential
+does not fix this:
+\[
+ f(x,y)=x_1\oplus\cdots\oplus x_n\oplus y_1\oplus\cdots\oplus y_m,
+ \qquad m\ge1,
+\]
+has $\C(f)=n+m-1$ over $B_2$, while $g\equiv1$ and $\C(g)=0$.
+The upper bound is an XOR chain; the lower bound follows from the input
+count in Lemma~\ref{lem:inputs}. A meaningful hardness assertion must
+therefore concern a worst case, a specified family, or a specified
+distribution.
+
+\paragraph{Reading route and contributions.}
+After the algorithmic overview, the next three sections establish the
+elementary bounds and explain
+why counting witnesses alone misses reusable computation.
+Section~\ref{sec:consistency-graph} improves the size exponent by combining
+a circuit-specific consistency budget with established graph-width
+tools, and proves the uniform counting consequence in
+Section~\ref{sec:counting-algorithm}.
+Section~\ref{sec:critical-balance} derives necessary structure for
+amplification at the critical gate budget.
+Section~\ref{sec:kernel-realization} then realizes cubic kernels with
+nearly critical supplied budgets but easy projections, and calculates
+the exact gap between supplied and minimum verifier size.
+Sections~\ref{sec:coupled-coverage} and~\ref{sec:worked-coverage}
+develop the joint sampling bound and analytical examples that separate
+it from the earlier estimates. The remaining sections distinguish
+typical truth tables, known lower bounds, conditional hardness, and
+open problems. Section~\ref{sec:prior-work} identifies which ingredients
+are classical and where priority of the combined statements is still
+unestablished; Appendix~\ref{sec:methods} records the research methods.
+
+\section{The universal ceiling and the first crossover}
+
+\begin{proposition}[Exhaustive expansion]\label{prop:enumeration}
+If $\C(f)\le s$, then
+\[
+ \C(g)\le2^m s+(2^m-1)=2^m(s+1)-1.
+\]
+\end{proposition}
+\begin{proof}
+For each witness $a\in\B^m$, fix the witness inputs of an $s$-gate
+circuit for $f$ to $a$. The resulting circuit computes $f(x,a)$ using
+at most $s$ gates. OR these outputs with $2^m-1$ additional gates.
+\end{proof}
+
+The classical Shannon--Lupanov theorem says
+\begin{equation}\label{eq:shannon}
+ M_n=(1+o(1))\frac{2^n}{n}
+ \qquad\text{over }B_2.
+\end{equation}
+See Lupanov's synthesis paper and Wegener's treatment
+\citep{Lupanov1958,Wegener1987}. The following elementary argument
+establishes the order of growth needed here, without the sharp leading
+constant.
+
+\begin{proposition}[The order of the universal bound]\label{prop:synthesis}
+$M_n=\Theta(2^n/n)$.
+\end{proposition}
+\begin{proof}
+An ordered $t$-gate circuit can be specified by choosing an operation
+and two predecessors for each gate and one output wire. Padding unused
+gates if necessary, the number of functions of complexity at most $t$
+is at most
+\begin{equation}\label{eq:count-deterministic}
+ 16^t(n+t+2)^{2t+1}.
+\end{equation}
+For a sufficiently small constant $c>0$ and $t=\lfloor c2^n/n\rfloor$, the logarithm
+of this expression is strictly smaller than $2^n$ by a constant
+fraction. There are $2^{2^n}$ Boolean functions. This proves the lower
+bound, and in fact proves it for a $1-o(1)$ fraction of functions.
+
+For the upper bound, split the input into $u\in\B^{n-k}$ and
+$v\in\B^k$. Simultaneously compute every Boolean function of $v$.
+This library has size $O(2^{2^k})$: recursively, each function on $j$
+variables is a multiplexer between two already available functions on
+$j-1$ variables, with constant gate cost. Summing over $j\le k$
+preserves the stated bound.
+
+For each fixed $u=a$, the residual function $h(a,v)$ is one library
+output. A multiplexer tree controlled by $u$ selects the appropriate
+output, using $O(2^{n-k})$ gates. For $n\ge4$, choose
+$k=\lfloor\log n\rfloor-1$, so $n/4<2^k\le n/2$. The total is
+\[
+ O(2^{2^k}+2^{n-k}+n)
+   =O(2^{n/2}+2^n/n)=O(2^n/n).
+\]
+The finitely many smaller values of $n$ are absorbed in the constant.
+\end{proof}
+
+\begin{corollary}[The basic envelope]\label{cor:envelope}
+\begin{equation}\label{eq:envelope}
+ D(n,m,s)\le\min\{2^m(s+1)-1,M_n\}
+          =O\!\left(\min\{2^m(s+1),2^n/n\}\right).
+\end{equation}
+\end{corollary}
+
+For $s\ge1$, the two estimates meet at the scale
+\begin{equation}\label{eq:crossover}
+ s_*\asymp\frac{2^{n-m}}n,
+ \qquad\text{or, equivalently,}\qquad
+ m_* = n-\log n-\log s+O(1).
+\end{equation}
+Thus if $s\gg2^{n-m}/n$, universal synthesis is $o(2^m s)$.
+For an amplification factor $2^m$ to remain possible up to a constant
+factor, one needs $2^m s=O(2^n/n)$; allowing a specified loss factor
+relaxes this condition by that factor. The weaker condition
+$s\ll2^n/n$ does not suffice.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Verifier size & Witness length at the crossover \\
+\midrule
+$s=n^a$, fixed $a>0$ & $m=n-(a+1)\log n+O(1)$ \\
+$s=2^{\alpha n}$, fixed $0<\alpha<1$
+  & $m=(1-\alpha)n-\log n+O(1)$ \\
+$s=\Theta(2^n/n)$ & $m=O(1)$, with constants determining the crossover \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.35cm,y=.75cm,>=Latex,font=\small]
+ \fill[blue!6] (0,0)--(0,1.3)--(3.5,4.8)--(4.8,4.8)--cycle;
+ \draw[->] (0,0)--(6.6,0) node[right] {$\log_2(s+1)$};
+ \draw[->] (0,0)--(0,5.6) node[above] {$\log_2 D$};
+ \draw[gray,dotted] (0,4.8)--(6.1,4.8);
+ \draw[blue!70!black,very thick] (0,1.3)--(3.5,4.8)--(6.1,4.8);
+ \draw[teal!70!black,thick,dashed] (0,0)--(4.8,4.8)--(6.1,4.8);
+ \draw[gray,dotted] (3.5,0)--(3.5,4.8);
+ \draw[gray,dotted] (4.8,0)--(4.8,4.8);
+ \node[above,rotate=34,blue!70!black] at (1.6,3.15) {exhaustive upper bound};
+ \node[below,rotate=34,teal!70!black] at (2.6,2.6) {baseline lower bound};
+ \node[above] at (5.05,4.9) {universal ceiling};
+ \node[below] at (3.5,0) {$\log_2 s_*$};
+ \node[below] at (4.8,0) {$\log_2 M_n$};
+ \node[left] at (0,1.3) {$m$};
+ \node[left] at (0,4.8) {$\log_2 M_n$};
+\end{tikzpicture}
+\caption{Schematic baseline bounds, suppressing additive constants on
+logarithmic axes. The shaded region represents a gap between bounds,
+not proved amplification. The lower bound is proved in
+Proposition~\ref{prop:baseline}. The structural bounds in
+Sections~\ref{sec:sharing} and~\ref{sec:consistency-graph} can improve the upper curve.}
+\label{fig:envelope}
+\end{figure}
+
+\paragraph{A ceiling is not a hardness theorem.}
+Once $2^m s$ exceeds $M_n$, the upper bound flattens. This does
+\emph{not} establish that $D(n,m,s)$ has reached $M_n$. Attainment is
+immediate only for $s\ge M_n$, when a hardest function of $x$ itself
+is an allowed verifier. Whether much smaller verifiers can project to
+near-maximal functions is part of the question.
+
+\paragraph{Verifiers near their own maximum.}
+The relevant maximum for $f$ is $M_{n+m}$, not $M_n$. If
+$\C(f)\ge\alpha2^{n+m}/(n+m)$ for a fixed $\alpha>0$, then
+\begin{equation}\label{eq:maximum-ratio}
+ \frac{\C(g)}{2^m\C(f)}
+    =O\!\left(\frac{n+m}{\alpha n}\,2^{-2m}\right).
+\end{equation}
+For growing $m$ this is an enormous relative saving. It says nothing
+by itself about whether $g$ has small absolute complexity.
+
+\section{Circuit structure yields a second easy range}\label{sec:sharing}
+
+\begin{lemma}[Effective inputs]\label{lem:inputs}
+The output cone of a circuit with $s\ge1$ gates contains at most $s+1$
+distinct input vertices. In particular, only that many witness inputs
+can matter. A function depending essentially on $t$ inputs requires
+at least $t-1$ gates.
+\end{lemma}
+\begin{proof}
+Delete all vertices outside the output cone. If it contains $t$ input
+vertices and $s$ gates, its underlying undirected graph is connected,
+so it has at least $s+t-1$ wires. Fan-in at most two gives at most
+$2s$ wires. Hence $t\le s+1$. Essential variables must occur in
+every circuit for the function.
+\end{proof}
+
+For a chosen circuit, let $a$ and $b$ be its numbers of used ordinary
+and witness inputs. Constants can be propagated, removing irrelevant
+pins without increasing size in $B_2$. Apart from constant functions,
+we can therefore take the output cone to have no constant vertices.
+The case of an output that is a single input is immediate below.
+
+\subsection{Sharing identical restrictions}
+
+For a gate $v$, let $Y_v$ be the set of witness inputs in its syntactic
+dependency cone, and write $k_v=|Y_v|$. Let $k$ be the corresponding
+number at the output.
+
+\begin{proposition}[A support-sensitive construction]\label{prop:support}
+For a circuit with gates $V$ and a gate as output,
+\begin{equation}\label{eq:support}
+ \C(g)\le\sum_{v\in V}2^{k_v}+2^k-1.
+\end{equation}
+\end{proposition}
+\begin{proof}
+For each $v$ and each assignment $\alpha\in\B^{Y_v}$, create one
+copy of $v$. Its inputs are the copies of its predecessors indexed by
+the restrictions of $\alpha$ to their witness supports. Ordinary input
+wires are shared; witness inputs are constants. Induction along the
+circuit proves correctness. OR the $2^k$ output copies.
+\end{proof}
+
+In particular, the part of the verifier independent of $y$ need only
+be computed once. This bound charges syntactic supports; simplifying
+restricted gates can give further savings.
+
+\subsection{Cutting shared witness inputs and gate outputs}
+
+There is another construction that handles circuits close to trees.
+Its proof is useful because it pinpoints the consistency that must be
+retained when branches share witnesses. The underlying expansion of
+copying constraints into consistent zero/one choices is established
+in tensor-network counting
+\citep[Theorem 17 of the author version]{BiamonteMortonTurner2015}.
+Here we keep ordinary inputs symbolic and track the $B_2$ gate budget.
+
+\begin{lemma}[Eliminating witnesses in a forest]\label{lem:forest}
+Suppose a collection of formulas has $q$ gates in total, ordinary input
+variables may repeat, and each witness variable occurs at most once
+in the entire collection. The assertion that there is a witness
+assignment making every formula output its prescribed bit has a
+deterministic circuit of size $O(q+\ell+1)$, where $\ell$ is the
+number of leaves and roots.
+\end{lemma}
+\begin{proof}
+For each formula node $v$, compute two predicates $P_v^0(x),P_v^1(x)$:
+which output values can its subtree realize by assigning its witnesses?
+At an ordinary input $x_i$, the pair is $(\neg x_i,x_i)$; at a witness
+leaf it is $(1,1)$; and at a constant $c$ it is $(1-c,c)$.
+For a binary gate $v=h(u,w)$, use
+\begin{equation}\label{eq:possible-values}
+ P_v^c=\OR_{\substack{d,e\in\B\\h(d,e)=c}}
+                    (P_u^d\land P_w^e).
+\end{equation}
+For a unary gate, use the analogous disjunction over its possible
+input values.
+The two subtrees have disjoint witness sets, so the indicated choices
+can be realized simultaneously for each fixed $x$. Each gate costs
+only a constant number of gates for its two predicates. Take the AND
+of the appropriate predicates at the roots. Witness sets of different
+trees are also disjoint. Repeated ordinary inputs cause no problem:
+they keep the same fixed values throughout.
+\end{proof}
+
+\begin{theorem}[Simulation by fixing shared vertices]\label{thm:cut}
+Consider a constant-free output cone with $s\ge1$ gates, $a$ ordinary
+inputs, and $b$ witness inputs. Let $r$ count the witness-input and
+gate vertices whose fan-out is at least two. Then
+\begin{equation}\label{eq:cut}
+ \C(g)=O((s+1)2^r),
+ \qquad r\le s+1-a-b.
+\end{equation}
+Ordinary input vertices are not included in $r$.
+\end{theorem}
+\begin{proof}
+Let $S$ be the set of the $r$ indicated vertices. Enumerate a bit
+assignment $\beta\in\B^S$. Replace every \emph{use} of a vertex in
+$S$ by its assigned bit. If that vertex is a gate, retain its defining
+gate and impose the equation that its computed output equals its
+assigned bit. Also require the original circuit output to be one.
+
+After these cuts, every remaining gate output is used at most once,
+and every unfixed witness input is used at most once. The defining
+equations for the cut gates, together with the original output
+condition, form a forest of formulas. It has $O(s+1)$ total gates,
+leaves, and roots; ordinary inputs may repeat. Lemma~\ref{lem:forest}
+gives an $O(s+1)$-gate circuit for this branch. OR the $2^r$ branches.
+
+For correctness, a satisfying assignment of the original circuit
+supplies a branch assignment by taking the actual values of the cut
+vertices. Conversely, a satisfying branch supplies compatible
+assignments to the remaining, disjoint witness sets. Restoring the cut
+wires, the retained defining equations ensure by topological induction
+that every assigned gate value equals its original computed value.
+Thus the original output is one. The defining equations are essential;
+guessing gate values without checking them would be unsound.
+
+For the bound on $r$, let $E$ be the number of wires. Every vertex
+except the output has fan-out at least one. Therefore
+\[
+ \sum_{v\ne\mathrm{out}}(\fanout(v)-1)
+     =E-(s+a+b-1)\le s+1-a-b.
+\]
+Every counted vertex contributes at least one to this nonnegative sum.
+\end{proof}
+
+\begin{corollary}[A size-dependent universal bound]\label{cor:size-exponent}
+Every verifier of complexity $s$ satisfies
+\begin{equation}\label{eq:size-exponent}
+ \boxed{\quad
+ \C(g)=O\!\left((s+1)2^{\min\{m,n,(s+1)/3\}}\right).
+ \quad}
+\end{equation}
+Consequently this estimate can be added to the minimum in
+\eqref{eq:envelope}.
+\end{corollary}
+\begin{proof}
+Normalize an optimal verifier circuit as above and let $s'\le s$
+be its remaining size. For a nontrivial output cone put
+$d=s'+1-a-b\ge0$. Exhaustive expansion costs $O((s'+1)2^b)$.
+Truth-table synthesis on the $a$ used ordinary inputs costs
+$O((s'+1)2^a)$, even by a minterm construction since $a\le s'+1$.
+Theorem~\ref{thm:cut} costs $O((s'+1)2^d)$. Taking the minimum gives
+\[
+ \C(g)=O((s'+1)2^{\min\{a,b,d\}}).
+\]
+Since $a+b+d=s'+1$, this exponent is at most $(s'+1)/3$;
+it is also at most $n$ and $m$. Constant and single-input outputs
+obey the bound directly.
+\end{proof}
+
+For example, if a verifier depends on all $n+m$ inputs and has
+$s=n+m-1+d$ gates, then $\C(g)=O((s+1)2^d)$. If $d=O(\log s)$,
+the projection has polynomial-size circuits even when $m$ is large.
+Without a full-input-dependence assumption, the unconditional
+$2^{(s+1)/3}$ bound still saves an exponential factor over $2^m$
+whenever $s+1\le(3-\delta)m$ for fixed $\delta>0$.
+
+\begin{remark}[What the coefficient means]
+The factor $1/3$ follows from balancing three quantities: used ordinary
+inputs, used witness inputs, and the available excess fan-out. It is
+an elementary upper bound, not an optimality claim or a known exact
+transition. The argument is specific to gate count and fan-in two.
+\end{remark}
+
+\input{sections/structure}
+
+\section{Many witnesses give small nonuniform circuits}
+
+For $x$ with $g(x)=1$, define its witness set
+$W_x=\{y:f(x,y)=1\}$. The minimum size of a set
+$H\subseteq\B^m$ intersecting every nonempty $W_x$ is a natural
+coverage parameter, say $\tau(f)$. For $g\equiv0$, take $\tau(f)=0$.
+By evaluating only witnesses in $H$,
+\begin{equation}\label{eq:cover}
+ \C(g)\le\tau(f)s+\max\{\tau(f)-1,0\}.
+\end{equation}
+
+\begin{proposition}[Witness-density bound]\label{prop:density}
+Suppose $n\ge1$ and every nonempty $W_x$ has size at least $K$, and set
+$\rho=K/2^m>0$. There is a fixed set of at most
+\begin{equation}\label{eq:hitting-size}
+ T=\min\left\{2^m,
+       \left\lceil\frac{n\ln2+1}{\rho}\right\rceil\right\}
+\end{equation}
+witnesses meeting all nonempty $W_x$. Hence
+\begin{equation}\label{eq:density}
+ \C(g)\le T(s+1)-1
+       =O\!\left((s+1)\min\{2^m,n2^m/K\}\right).
+\end{equation}
+For the identically zero function, the conclusion holds trivially.
+\end{proposition}
+\begin{proof}
+Take $t=\lceil(n\ln2+1)/\rho\rceil$ independent uniform witnesses.
+A fixed nonempty witness set is missed with probability at most
+$(1-\rho)^t\le e^{-\rho t}$. A union bound over at most $2^n$
+ordinary inputs bounds the chance of any miss by $e^{-1}<1$.
+Thus a successful sample exists. Remove duplicates, or use all $2^m$
+witnesses if that is smaller. Hardwire the resulting set.
+\end{proof}
+
+The same witnesses work for \emph{all} inputs; this is why the result
+gives one deterministic circuit. Finding the set efficiently is not
+part of the claim. If every positive input has an inverse-polynomial
+witness density and $s$ is polynomial in $n$, then $g$ has
+polynomial-size circuits.
+
+For a blowup within a factor $L$ of $2^m(s+1)$, this construction
+requires $K=O(nL)$ as a necessary condition. This is a condition on
+the \emph{minimum} positive fiber size. It does not say that every
+positive input must have few witnesses; a small exceptional collection
+of inputs can determine exact circuit complexity. Conversely, rare
+witnesses do not prove hardness: $f(x,y)=[y=0^m]$ has one witness for
+every $x$, yet its projection is constant.
+
+\input{sections/coverage}
+
+\paragraph{Consistency obstructs naive aggregation.}
+In general,
+\[
+ \exists y\,(A(x,y)\land B(x,y))
+ \not\equiv(\exists y\,A(x,y))\land(\exists y\,B(x,y)).
+\]
+Take $A=y_1$ and $B=\neg y_1$. Both separate existential statements
+hold, but their conjunction has no common witness. Lemma~\ref{lem:forest}
+works because it proves that the witness sets being combined are
+disjoint. The cut construction restores that condition while retaining
+the defining equations. This is also why identities that compress
+parity aggregates do not automatically compress existential OR.
+
+\input{sections/examples}
+
+\section{What random verifiers do, and do not, demonstrate}
+
+\subsection{Uniform truth tables usually project to a dense function}
+
+Choose every value of $f$ independently and uniformly from $\B$.
+For each $x$,
+\begin{equation}\label{eq:random-row}
+ \Prb[g(x)=0]=2^{-2^m}.
+\end{equation}
+Different rows are independent. Thus the number $Z$ of zeros of $g$
+has exactly the distribution
+\begin{equation}\label{eq:binomial}
+ Z\sim\operatorname{Bin}(2^n,2^{-2^m}),
+ \qquad \E Z=2^{n-2^m},
+ \qquad \Prb[g\equiv1]=(1-2^{-2^m})^{2^n}.
+\end{equation}
+In particular,
+\[
+ \Prb[g\not\equiv1]\le2^{n-2^m}.
+\]
+If $2^m-n\to+\infty$, then $g\equiv1$ with probability tending to
+one. If $n-2^m\to+\infty$, then $\Prb[g\equiv1]\to0$.
+The constant-function transition is therefore at $2^m\approx n$,
+or $m\approx\log n$, with the exact probability in
+\eqref{eq:binomial} accounting for integer effects.
+
+Almost all such $f$ have near-maximal complexity by the sharp counting
+theorem. Hence near-maximal verifiers with constant projection are
+abundant in this range. This is a statement about uniform random truth
+tables; it is not a distribution on small verifier circuits.
+
+At the coarser scale of being within a constant factor of maximal
+complexity, even that scale alone does not fix $\C(g)$. For $n\ge3$
+and $m\ge1$, write $x=(a,u)$ and $y=(b,z)$. Choose functions
+$h(u,z)$ and $q(u)$ of complexities $\Theta(M_{n+m-2})$ and
+$\Theta(M_{n-1})$, respectively, and put
+\[
+ f((a,u),(b,z))=
+  \bigl(a\land(b\lor h(u,z))\bigr)
+   \lor\bigl(\neg a\land q(u)\bigr).
+\]
+Restriction to $a=1,b=0$ recovers $h$, while
+$g(a,u)=a\lor q(u)$ recovers $q$ at $a=0$. Upper bounds from the
+displayed circuits show $\C(f)=\Theta(M_{n+m})$ and
+$\C(g)=\Theta(M_n)$. In contrast, choose $h'(x,z)$ with complexity
+$\Theta(M_{n+m-1})$; then $b\lor h'(x,z)$ has verifier complexity
+$\Theta(M_{n+m})$ and constant projection. These
+examples concern constant-factor maximality, not a sharp
+$(1-o(1))M_{n+m}$ requirement.
+
+\subsection{Balancing the projection does not make the verifier small}
+
+If instead each entry of $f$ is independently one with probability
+\[
+ p_m=1-2^{-1/2^m},
+\]
+then $(1-p_m)^{2^m}=1/2$, so the projected function $g$ is
+\emph{exactly} a uniformly random Boolean function on $n$ inputs.
+For large $m$, $p_m\sim(\ln2)2^{-m}$. This ensemble corrects the
+density bias of uniform relations, but does not give a small verifier.
+The following counting fact makes the limitation precise.
+
+\begin{proposition}[Almost all functions need large nondeterministic
+circuits]\label{prop:nondet-count}
+Even allowing an arbitrary number of witness bits, a uniformly random
+$n$-input function has minimum verifier complexity
+$\Omega(2^n/n)$ with probability $1-o(1)$.
+\end{proposition}
+\begin{proof}
+By Lemma~\ref{lem:inputs}, an output cone of size at most $s$ uses at
+most $s+1$ witness bits, up to relabeling. Circuits with zero gates
+are also covered by this bound. Pad to $s$ gates and name the
+witnesses from a fixed set of $s+1$ names. The number of possible
+projected functions is at most
+\begin{equation}\label{eq:count-nondet}
+ 16^s(n+2s+3)^{2s+1}=2^{O(s\log(n+s+2))}.
+\end{equation}
+Each circuit determines only one projected function. For a sufficiently
+small constant $c>0$, setting $s=c2^n/n$ makes the logarithm of
+\eqref{eq:count-nondet} at most $(1-\eta)2^n$ for some fixed
+$\eta>0$ and all sufficiently large $n$, taking the integer part of
+$c2^n/n$ if needed. Divide by $2^{2^n}$.
+\end{proof}
+
+It follows that the balanced-projection ensemble has
+$\C(f)=\Omega(2^n/n)$ with high probability. Randomizing a truth
+table can give a hard projection, but this method does not reach the
+small-verifier regime under discussion.
+
+More generally, the ordinary counting comparison cannot by itself
+turn $s$ gates into a $2^m s$ lower bound: the entire family of
+size-$s$ verifiers has description entropy at most
+$O(s\log(n+s+2))$, independently of the nominal witness count.
+Its projections might still contain very hard functions. Establishing
+that requires information about which functions the family contains,
+beyond this cardinality estimate.
+
+\section{Unconditional lower bounds and their limits}
+
+\begin{proposition}[A baseline lower bound]\label{prop:baseline}
+If $2\le s\le M_n$, then
+\[
+ D(n,m,s)>\frac{s-1}{2}.
+\]
+If $s\ge M_n$, then $D(n,m,s)=M_n$. Thus, away from degenerate
+small parameters, $D(n,m,s)=\Omega(\min\{s,M_n\})$.
+\end{proposition}
+\begin{proof}
+Take a circuit for a function of complexity $M_n$. Examine its gates
+in topological order and choose the first whose computed function has
+complexity greater than $(s-1)/2$. Such a gate exists, since the
+output does. Each of its predecessor functions has complexity at most
+$(s-1)/2$; inputs and constants have complexity zero. Computing these
+functions separately and applying the gate shows that the selected
+function has complexity at most $s$. Use that function as a verifier
+independent of $y$. For $s\ge M_n$, use a function attaining $M_n$.
+\end{proof}
+
+This proves a lower bound without any nondeterministic amplification.
+The gap between it and the upper envelope can be exponential in $m$.
+It is not closed by Shannon counting.
+
+Results in the literature also show that nondeterminism can sometimes save
+gates. Over $U_2=B_2\setminus\{\mathrm{XOR},\mathrm{XNOR}\}$,
+Morizumi gives an $n$-input function with nondeterministic complexity
+at most $2n+o(n)$ and deterministic complexity $3n-o(n)$
+\citep[Theorem~3]{Morizumi2018}. The function is an OR of parity
+functions on approximately $\sqrt n$ disjoint blocks. Its verifier
+guesses a block using about $\tfrac12\log n$ bits, selects the block,
+and computes its parity. The result establishes a constant-factor
+advantage in that basis, far smaller than the full enumeration factor.
+The exact constants do not transfer to $B_2$.
+
+In the other direction, parity itself requires exactly $3(n-1)$ gates
+in both deterministic and nondeterministic $U_2$ circuits
+\citep{Morizumi2015}. Neither result establishes an exponential
+deterministic/nondeterministic gap for unrestricted circuits.
+
+\subsection{The polynomial-verifier range contains the central open problem}
+
+\begin{proposition}[The nonuniform complexity-class boundary]
+The following statements are equivalent:
+\begin{enumerate}[label=(\roman*)]
+ \item $\NP\subseteq\Ppoly$.
+ \item Every polynomial-size verifier family with polynomially many
+       witness bits has a polynomial-size deterministic projection
+       family, even if the verifiers themselves are nonuniform.
+ \item For every polynomially bounded $m(n),s(n)$, the function
+       $D(n,m(n),s(n))$ is polynomially bounded in $n$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+If SAT has polynomial-size circuits, encode a verifier circuit
+together with its ordinary input as an instance of circuit
+satisfiability. The encoding length is polynomial in $n+m+s$.
+A polynomial-size SAT circuit, with the verifier description
+hardwired, computes the projection. This proves (i) implies (ii)
+and supplies a uniform polynomial size bound for each choice of
+polynomial parameter bounds, giving (iii).
+
+Statement (iii) immediately implies (ii). Every language in $\NP$
+has polynomial-size verifier circuits and polynomial witness length,
+so (ii) implies (i).
+\end{proof}
+
+Consequently, a superpolynomial lower bound for the projection of a
+polynomial-size verifier family would prove
+$\NP\not\subseteq\Ppoly$, even without a uniform construction of
+that family. This is stronger than $\mathsf P\ne\NP$ and remains
+open. The lower bound $\C(g)\ge2^{m-o(m)}\C(f)$ asks for much more
+quantitative information.
+
+If $s=\poly(n)$ and $m=O(\log n)$, exhaustive expansion already gives
+polynomial size. A superpolynomial lower bound at every sufficiently
+large length therefore requires $m=\omega(\log n)$.
+For example, with $s=n^a$ and $m=\beta n$,
+$0<\beta<1$, the ceiling permits $2^{\beta n}n^a$ for large $n$.
+Proving a corresponding exponential lower bound for a verifier family
+is far beyond the unconditional baseline above.
+
+\section{A precise conditional version of exponential hardness}
+
+Ordinary ETH and SETH are hypotheses about algorithms. A lower bound
+on the minimum size of a nonuniform circuit requires an appropriate
+circuit hypothesis, or an additional argument connecting the two.
+We explicitly use the nonuniform version of SETH, as formulated, for
+example, in \citet[Definition~2.9]{CVP2019}:
+
+\begin{quote}
+For every $0<\varepsilon<1$, there is a fixed $k$ such that no circuit
+family of size $O(2^{(1-\varepsilon)m})$ decides satisfiability of
+$k$-CNFs on $m$ variables.
+\end{quote}
+
+Here is an explicit verifier making the parameters transparent.
+List all $k$-clauses on distinct variables from $y_1,\ldots,y_m$,
+including all sign choices. Their number is
+\[
+ n=2^k\binom{m}{k}=\Theta_k(m^k).
+\]
+Let $x_c$ indicate whether clause $c$ is present, and set
+\begin{equation}\label{eq:cnf-verifier}
+ f(x,y)=\AND_c(\neg x_c\lor c(y)).
+\end{equation}
+Then $g(x)$ is satisfiability of the indicated formula. Computing all
+clauses, testing the indicators, and taking their conjunction uses
+$O_k(n+m)$ gates. Every indicator and every witness variable is
+essential when $m\ge k\ge1$, so Lemma~\ref{lem:inputs} also gives
+\begin{equation}\label{eq:cnf-size}
+ s=\C(f)=\Theta_k(n+m)=\Theta_k(m^k).
+\end{equation}
+This mask encoding is polynomially interchangeable, for fixed $k$,
+with the usual list encoding. Clauses of width less than $k$ can be
+expanded into the conjunction of their extensions on unused variables,
+using at most $2^k$ clauses when $m\ge k$.
+
+\begin{proposition}[Conditional hardness in a specified range]
+Assume nonuniform SETH. For every fixed $0<\varepsilon<1$, some fixed
+$k$ gives the verifier family \eqref{eq:cnf-verifier}, with
+$n,s=\Theta_k(m^k)$, whose projections satisfy
+\begin{equation}\label{eq:conditional-lower}
+ \C(g)>2^{(1-\varepsilon)m}
+ \quad\text{for infinitely many }m.
+\end{equation}
+At the same time $\C(g)\le2^m\poly(m)$ by enumeration.
+\end{proposition}
+\begin{proof}
+Otherwise the projections would have circuits bounded by a constant
+multiple of $2^{(1-\varepsilon)m}$ at every length. The finitely many
+exceptions can be absorbed in the constant. This contradicts the
+stated hypothesis for the fixed $k$ it supplies, using the mask
+encoding.
+\end{proof}
+
+This gives evidence for an exponent close to the exhaustive-search
+exponent, deep below the $n$-input ceiling. It does \emph{not} prove
+a bound within a polynomial factor of $2^m s$, or a sharp
+$2^{m-o(m)}$ lower bound for one fixed $k$: the value of $k$ may
+depend on $\varepsilon$. It also does not prescribe the worst case
+at every triple $(n,m,s)$.
+
+Paturi and Pudl\'ak study exponential resource tradeoffs for circuit
+satisfiability under explicit assumptions \citep{PaturiPudlak2010}.
+Williams shows that certain general-purpose algorithmic improvements
+over exhaustive search would themselves imply major circuit lower
+bounds \citep{Williams2010}. These results help explain the difficulty
+of generic elimination. Neither is an unconditional lower bound
+$\C(\exists y\,f)\gtrsim2^m\C(f)$ for arbitrary verifiers.
+
+\input{sections/prior-work}
+
+\section{What would sharpen the boundary?}
+
+The bounds give an explicit necessary window for a blowup close to
+exhaustive expansion. Stating the permitted loss avoids ambiguity
+about the meaning of ``approximately $2^m s$.''
+
+\begin{proposition}[A necessary window, not a matching lower bound]
+Let $s=\C(f)$ and $L\ge1$. If
+$\C(g)\ge2^m(s+1)/L$, then, for every fixed $\varepsilon>0$,
+there is a constant $A_\varepsilon\ge1$ such that
+\begin{equation}\label{eq:necessary-window}
+ \boxed{\qquad
+ \frac{m-\log(A_\varepsilon L)}{1/5+\varepsilon}
+ \ \le\ s+1\ \le\ \frac{LM_n}{2^m}.
+ \qquad}
+\end{equation}
+If $K=\min_{x:g(x)=1}|W_x|$, then also $K=O(nL)$.
+\end{proposition}
+\begin{proof}
+Compare the assumed lower bound with $\C(g)\le M_n$ and with
+$\C(g)\le A_\varepsilon(s+1)2^{(1/5+\varepsilon)(s+1)}$ from
+Theorem~\ref{thm:fifth}. Rearranging gives
+\eqref{eq:necessary-window}. The density conclusion follows by
+comparing with Proposition~\ref{prop:density}.
+\end{proof}
+
+For any family with $m\to\infty$ and $\log L=o(m)$, the left
+inequality implies $\liminf(s+1)/m\ge5$: first hold $\varepsilon$
+fixed and then let it tend to zero. A constant-factor match therefore
+needs $s+1\ge(5-o(1))m$ as well as $s+1=O(2^{n-m}/n)$.
+These are necessary conditions in our gate model. They are not known
+to be sufficient. Corollary~\ref{cor:sparse-population} strengthens the
+minimum-fiber condition to a population bound: amplification of size
+$T=2^m(s+1)/L$ requires at least
+$\Omega((T/n)\log(2+T/n))$ positive inputs with $O(nL)$ witnesses.
+
+The results above give several independent reasons for projection to
+be easy. For a chosen verifier circuit of size $s$, they can be
+combined as
+\begin{equation}\label{eq:combined}
+\begin{split}
+ \C(g)\le\min\bigl\{&M_n,\ 2^m(s+1)-1,\
+       \tau(f)s+\max\{\tau(f)-1,0\},\\
+       &\sum_v2^{|Y_v|}+2^{|Y_{\mathrm{out}}|}-1,\
+       A(s+1)2^r,\ A_\varepsilon(s+1)2^{(1/5+\varepsilon)(s+1)}\bigr\},
+\end{split}
+\end{equation}
+where $A$ is an absolute constant, $A_\varepsilon$ depends only on
+$\varepsilon$, and the structural terms use a
+normalized nontrivial output cone as in Section~\ref{sec:sharing}.
+Simple outputs are handled directly. The first, second, and last
+terms give bounds using $n,m,s$ alone; the other terms use properties
+of the particular verifier.
+Two more informative bounds retain its internal geometry:
+\[
+ \C(g)\le p+O_\delta\!\left((q+1)
+      2^{\min\{h,b,(1/3+\delta)\kappa\}}\right),
+ \qquad
+ \C(g)\le B_\mu(t)+O\!\left(
+       \frac{nE_\mu(t)}{\log(E_\mu(t)+2)}\right).
+\]
+The first exposes how ordinary preprocessing, witness count, and
+consistency cycles compete. The second couples reuse with the cost
+of repairing uncovered inputs. Both can be much smaller than a bound
+that retains only the total size and witness count.
+
+\begin{question}[The remaining worst-case range]
+For specified parameter families with $m=\omega(\log n)$,
+$s$ sufficiently large compared with $m$, and
+$2^m s\ll2^n/n$, how large can $D(n,m,s)$ be?
+Can one obtain a general upper bound substantially below $2^m s$,
+or establish a quantitatively matching lower bound under a clearly
+stated hypothesis?
+\end{question}
+
+Three distinctions are useful in pursuing this question.
+\begin{enumerate}
+ \item \textbf{A parameter region where hardness is possible is not
+ a proved hard region.} The ceiling and the size-dependent simulation
+ give necessary restrictions. They do not supply hard functions.
+ \item \textbf{A difficult witness cover is not a circuit lower bound.}
+ A lower bound on $\tau(f)$ obstructs enumeration of a fixed witness
+ set. A circuit for $g$ may use a completely different representation.
+ Likewise, large syntactic witness supports or many shared vertices
+ need not force expensive projection.
+ \item \textbf{Exponential rate and multiplicative accuracy differ.}
+ A lower bound $2^{(1-\varepsilon)m}$ is exponentially smaller than
+ $2^m$. A claim such as $\widetilde\Omega(2^m s)$ must specify which
+ polynomial or logarithmic factors are being hidden and in which
+ parameters. Witness padding must also be excluded as an explanation
+ of the claimed ratio.
+\end{enumerate}
+
+\paragraph{Exploit the gate tables beyond their graph.}
+The $1/5$ proof uses a width bound for arbitrary cubic graphs. It
+ignores extra algebraic structure in tensors obtained from deterministic
+gate equations. Theorem~\ref{thm:critical-structure} identifies the
+conditions that hypothetical amplification at the five-gate boundary
+must satisfy. Theorem~\ref{thm:kernel-realization} shows that acyclicity,
+essential inputs, and nearly critical supplied budgets still allow
+every simple 2-connected cubic kernel, even with an easy projection.
+Thus those conditions alone do not exclude such topologies. The
+realization uses a nonminimal verifier; restrictions specific to
+minimum circuits remain a separate possibility.
+A sharper contraction or simplification theorem that exploits gate
+semantics is a concrete route to a smaller exponent. The transfer
+is explicit: if the relevant cubic kernels admit cutwidth
+$cN+o(N)$, the same proof replaces the limiting projection and counting
+coefficients by, respectively,
+\[
+ \frac{2c}{1+4c}
+ \quad\hbox{and}\quad
+ \frac{2c}{1+2c}.
+\]
+Indeed $N\le2\kappa$ gives cycle exponent $2c\kappa+o(\kappa)$;
+balance against both $h,b$ for projection and against $b$ alone for
+counting. These are conditional transfer formulas, not improved width
+theorems. A uniform algorithm additionally needs suitable layouts to
+be constructible within the claimed running time.
+
+\paragraph{Optimize a distribution together with its circuit representation.}
+The worked families show two distinct losses in a density-only theory:
+identical row masses can hide exponentially different occupancies, and
+the unique best minimum-row-mass distribution can be worse for the
+joint objective. A natural next theorem would approximate or bound
+\[
+ \inf_{\mu,\,t\ge0}
+ \left[B_\mu(t)+A\frac{nE_\mu(t)}{\log(E_\mu(t)+2)}\right]
+\]
+for a fixed synthesis constant $A$, with integer $t$, on a useful
+class of succinct verifiers. One should also compare equivalent
+verifier circuits of comparable size, since moving a witness gate
+within a parity chain changes the occupancy objective. The target is
+an improved simulation theorem; a lower bound on this objective alone
+would still not lower-bound unrestricted $\C(g)$.
+
+\paragraph{Separate time savings from space savings and from hardness.}
+The counting corollary makes a specific follow-up possible: determine
+whether its cycle-budget saving can be retained with substantially
+less space, and reconcile its exact statement with the older circuit-SAT
+literature. Separately, the sparse-fiber population theorem suggests
+studying the entire low-multiplicity tail in a concrete conditional
+hardness family. A successful hardness argument must add an ingredient
+that obstructs arbitrary circuits, rather than merely obstructing a
+witness cover or a chosen contraction. The general amplification claim
+and a matching description of $D(n,m,s)$ remain open.
+
+\appendix
+\input{sections/aggregation}
+\input{sections/methods}
+
+\setlength{\bibsep}{3pt plus 1pt minus 1pt}
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}

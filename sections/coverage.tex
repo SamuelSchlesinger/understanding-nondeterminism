@@ -1,0 +1,225 @@
+\subsection{Cover only what is expensive to correct}\label{sec:coupled-coverage}
+
+Throughout the coverage refinements below, assume $n\ge2$.
+
+The coverage bound charges $s$ gates for every witness, while the support
+bound compiles every possible restriction at every gate. Both charges can
+be avoided simultaneously. A selected witness family may induce very few
+different restrictions at expensive gates. Moreover, the family need not
+cover every positive input if the remaining exceptions have a cheap circuit.
+
+We first record a convenient elementary synthesis bound. Its role here is
+to price the correction, not to claim an optimal theorem about sparse
+Boolean functions; sharper results in some ranges are discussed in
+Section~\ref{sec:prior-work}.
+
+\begin{lemma}[A circuit for a finite exceptional set]\label{lem:sparse}
+For $n\ge2$, the characteristic function of any $R$ points of $\B^n$
+has complexity
+\[
+ O\!\left(\frac{nR}{\log(R+2)}\right).
+\]
+The expression is zero for $R=0$. A simpler bound is $nR$.
+\end{lemma}
+\begin{proof}
+A single point indicator takes $n-1$ gates over $B_2$: test the first
+two prescribed bits with one binary gate, then AND each subsequent
+prescribed literal into the result. ORing $R$ indicators proves the
+simpler bound and handles $R\le1$.
+
+For $R\ge2$, put $k=\min\{n,\lfloor\log R\rfloor\}$ and partition
+the input coordinates into $\lceil n/k\rceil$ blocks of at most $k$
+bits. Within each block compute every assignment indicator. Sharing
+prefix indicators makes this library cost $O(2^k)$ gates, rather than
+$O(k2^k)$. Each of the $R$ selected points is an AND of one indicator
+from each block. OR these point indicators. The total cost is
+\[
+ O\!\left(\left\lceil\frac nk\right\rceil(2^k+R)\right)
+ =O\!\left(\frac{nR}{\log(R+2)}\right).
+\]
+\end{proof}
+
+Fix a particular verifier circuit. For a witness set $H$, let
+\[
+ N_v(H)=\bigl|\{y|_{Y_v}:y\in H\}\bigr|,
+ \qquad
+ R(H)=\bigl|\{x:g(x)=1,\ H\cap W_x=\varnothing\}\bigr|.
+\]
+The output has its own support $Y_{\mathrm{out}}$; if the output is a
+gate, its occurrence in an output term below is in addition to its
+occurrence in the sum over gates.
+
+\begin{lemma}[Selected restrictions and exact correction]\label{lem:selected}
+For every $H\subseteq\B^m$, including $H=\varnothing$,
+\begin{align}
+ \C(g)&\le \sum_v N_v(H)+N_{\mathrm{out}}(H)+nR(H),
+       \label{eq:selected-linear}\\
+ \C(g)&\le \sum_v N_v(H)+N_{\mathrm{out}}(H)
+       +O\!\left(\frac{nR(H)}{\log(R(H)+2)}\right).
+       \label{eq:selected-sparse}
+\end{align}
+The sums run over the gates of the supplied verifier.
+\end{lemma}
+\begin{proof}
+Copy gate $v$ once for each restriction to $Y_v$ that occurs in $H$.
+An ordinary predecessor is the same input in every copy. A witness
+predecessor becomes its fixed bit. A gate predecessor uses its copy
+indexed by the restriction to its own, smaller support. This computes
+every selected $f(x,y)$ with the indicated sharing.
+
+Deduplicate the output-support restrictions before taking their OR;
+this costs at most $\max\{N_{\mathrm{out}}(H)-1,0\}$ gates. Its
+output $g_H$ never falsely accepts an input. Let $e_H$ be the
+characteristic function of the $R(H)$ positive inputs missed by $H$.
+Then $g=g_H\lor e_H$. Point indicators with their final ORs cost at
+most $nR(H)$, proving \eqref{eq:selected-linear}. Use
+Lemma~\ref{lem:sparse} for \eqref{eq:selected-sparse}; the final OR
+is absorbed when $R(H)>0$ and is unnecessary otherwise. For empty $H$
+only the correction is needed.
+\end{proof}
+
+\subsection{An occupancy--alteration theorem}\label{sec:occupancy}
+
+Let $\mu$ be any probability distribution on witness strings. It is
+chosen separately for each verifier and need not be efficiently
+samplable. Write
+\[
+ p_{v,\alpha}=\Prb_{y\sim\mu}[y|_{Y_v}=\alpha],
+ \qquad p_x=\mu(W_x).
+\]
+For an integer $t\ge0$, define
+\begin{align}
+ B_\mu(t)
+ &=\sum_v\sum_{\alpha\in\B^{Y_v}}
+        \bigl(1-(1-p_{v,\alpha})^t\bigr)
+   +\sum_{\alpha\in\B^{Y_{\mathrm{out}}}}
+        \bigl(1-(1-p_{\mathrm{out},\alpha})^t\bigr),
+        \label{eq:occupancy-cost}\\
+ E_\mu(t)&=\sum_{x:g(x)=1}(1-p_x)^t.
+        \label{eq:expected-exceptions}
+\end{align}
+Here $\B^Y$ means assignments to the coordinate set $Y$. At $t=0$
+every power is one, including $0^0$ in these sampling expressions.
+Thus $B_\mu(0)=0$ and $E_\mu(0)=|g^{-1}(1)|$.
+
+\begin{theorem}[Joint sharing, sampling, and alteration]\label{thm:occupancy}
+For $n\ge2$, every $\mu$ and every integer $t\ge0$ give
+\begin{align}
+ \C(g)&\le B_\mu(t)+nE_\mu(t),\label{eq:occupancy-linear}\\
+ \boxed{\quad
+ \C(g)\le B_\mu(t)
+   +O\!\left(\frac{nE_\mu(t)}{\log(E_\mu(t)+2)}\right).
+ \quad}\label{eq:occupancy-master}
+\end{align}
+The constant in the second bound is absolute. Both conclusions concern
+the existence of one exact circuit, with no error on any input.
+\end{theorem}
+\begin{proof}
+Draw $t$ independent witnesses from $\mu$ and let $H$ contain the
+distinct sampled strings. A support assignment $\alpha$ appears at
+gate $v$ with probability $1-(1-p_{v,\alpha})^t$. Consequently
+\[
+ \E\!\left[\sum_v N_v(H)+N_{\mathrm{out}}(H)\right]=B_\mu(t).
+\]
+A positive input $x$ is missed with probability $(1-p_x)^t$, so
+$\E R(H)=E_\mu(t)$. Take expectations in
+\eqref{eq:selected-linear} and choose a sample whose construction cost
+is no greater than its mean. This proves \eqref{eq:occupancy-linear}.
+
+For the sparse bound, the function $\phi(z)=z/\log(z+2)$ is concave
+on $[0,\infty)$. In natural logarithms its second derivative has the
+sign of $2z-(z+4)\ln(z+2)$, which is negative: the opposite quantity
+is positive at zero and has positive derivative
+$\ln(z+2)-1+2/(z+2)$. Jensen's inequality gives
+$\E\phi(R(H))\le\phi(\E R(H))$. Apply this inequality to
+\eqref{eq:selected-sparse} and again select a sample of cost at most
+the expectation. If $E_\mu(t)=0$, there are no exceptions with
+positive probability and no correction cost. No description of $\mu$
+is placed in the resulting circuit; only the selected witnesses and
+the correction are hardwired.
+\end{proof}
+
+The two terms describe different resources. $B_\mu(t)$ counts distinct
+local computations, while $E_\mu(t)$ counts positive inputs still
+unexplained by the selected witnesses. In particular, a large $t$ need
+not imply a large circuit: repeatedly sampling restrictions that have
+already occurred adds no new local computation.
+
+\begin{corollary}[Density and sharing, with a minimum at each gate]
+\label{cor:density-sharing}
+Suppose $p_x\ge\rho>0$ for every positive input. Set
+$t=\lceil(n\ln2+\ln4)/\rho\rceil$. There is a witness cover $H$
+whose shared-restriction circuit has size at most $2B_\mu(t)$.
+For uniform witnesses this gives
+\[
+ \C(g)=O\!\left(
+   \sum_v\min\{2^{|Y_v|},n/\rho\}
+   +\min\{2^{|Y_{\mathrm{out}}|},n/\rho\}\right).
+\]
+\end{corollary}
+\begin{proof}
+A union bound gives $\Prb[R(H)>0]\le2^ne^{-\rho t}\le1/4$.
+If $B_\mu(t)>0$, Markov's inequality bounds the probability that
+the occupancy cost exceeds $2B_\mu(t)$ by $1/2$. Some sample therefore
+covers every positive input and has the claimed cost. The case of no
+positive inputs is immediate. For a nonempty projection and $t\ge1$,
+the output occupancy has expectation at least one, so the remaining
+case $B_\mu(t)=0$ cannot arise. Each occupancy is at most both its
+number of possible support assignments and the sample count $t$.
+\end{proof}
+
+Unlike taking the minimum of two total-cost estimates, this bound
+takes a separate minimum at each gate. Section~\ref{sec:worked-coverage}
+gives a family where this distinction makes an exponential difference.
+
+\subsection{Hardness requires a population of sparse fibers}
+
+\begin{corollary}[The entire lower tail of the witness count matters]
+\label{cor:fiber-profile}
+For $1\le K\le2^m$, put
+$R_K=|\{x:0<|W_x|<K\}|$. Then
+\[
+ \boxed{\quad
+ \C(g)=O\!\left(\frac{n(s+1)2^m}{K}
+            +\frac{nR_K}{\log(R_K+2)}\right).
+ \quad}
+\]
+\end{corollary}
+\begin{proof}
+Use the proof of Proposition~\ref{prop:density} only on inputs with
+at least $K$ witnesses. A set of $O(n2^m/K)$ witnesses covers all
+such inputs. Every missed positive input belongs to the $R_K$-point
+exceptional set. Evaluate the selected witnesses and use
+Lemma~\ref{lem:sparse} to correct precisely those that were missed.
+The function $z/\log(z+2)$ is increasing, so the correction cost is
+bounded by the displayed expression.
+\end{proof}
+
+\begin{corollary}[A quantitative sparse-fiber population]
+\label{cor:sparse-population}
+Let $T=2^m(s+1)/L$, where $L\ge1$, and assume $\C(g)\ge T$.
+There are absolute constants $c,c'>0$ such that
+\[
+ \bigl|\{x:0<|W_x|\le c nL\}\bigr|
+ \ \ge\ c'\frac{T}{n}\log\!\left(2+\frac{T}{n}\right).
+\]
+\end{corollary}
+\begin{proof}
+Choose a sufficiently large absolute $c$. If
+$K=\lceil c nL\rceil\le2^m$, the first term of the profile bound
+is at most $T/2$ after increasing $c$ to account for its absolute
+constant. It follows that $R_K/\log(R_K+2)\ge c_0T/n$ for an
+absolute $c_0>0$. This implies $R_K\ge c_1T/n$, and substitution
+back into the logarithm gives
+$R_K\ge c_2(T/n)\log(2+T/n)$. Adjusting $c$ includes the ceiling
+in the asserted threshold. If the chosen threshold exceeds $2^m$,
+all positive inputs qualify. Apply Lemma~\ref{lem:sparse} directly
+to the support of $g$ and use the same inversion.
+\end{proof}
+
+The original minimum-density condition asserts that at least one
+positive input has few witnesses. This corollary forces a number of
+such inputs controlled by the claimed hardness. It remains a necessary
+condition: even a large set of unique-witness inputs can have an easy
+projection. The stronger theorem \ref{thm:occupancy} also detects
+cover geometry that a list of fiber cardinalities cannot describe.

@@ -1,0 +1,226 @@
+\section{Worked families: what the parameters reveal}
+\label{sec:worked-coverage}
+
+The following examples distinguish the guarantees of compilation methods.
+Their projected functions are explicitly easy. We calculate their actual
+complexities where possible, so that a large upper-bound expression is
+never mistaken for a lower bound on the function.
+
+\subsection{An exponential improvement from selecting and sharing together}
+
+Let $N\ge2$, $k\ge3$, and $\ell\ge2$. The ordinary inputs are
+$z\in\B^N$, $u\in\B^k$; the witnesses are $a\in\B^k$,
+$b\in\B^\ell$. Indices on $a$ are cyclic. Define
+\begin{align}
+ T(u,a)&=\AND_{i=1}^k[u_i=a_i\oplus a_{i+1}],\label{eq:cyclic-check}\\
+ f(z,u;a,b)&=\operatorname{PAR}_N(z)\land T(u,a)
+                         \land\operatorname{PAR}_\ell(b).
+                         \label{eq:cyclic-verifier}
+\end{align}
+Use XOR chains for the two parities, one XOR and one XNOR for each
+equation, a prefix AND chain for the equations, then AND the $z$ parity
+with $T$ and finally with the $b$ parity. This supplied circuit has
+\[
+ n=N+k,\qquad m=k+\ell,\qquad s=N+3k+\ell-1.
+\]
+Every gate is in the output cone. Every input is essential: starting
+from an accepting assignment, changing a $z$ or $b$ bit flips a required
+parity; changing a $u$ bit violates an equation; changing an $a$ bit
+violates two equations. Therefore
+\[
+ N+2k+\ell-1\le\C(f)\le N+3k+\ell-1.
+\]
+The supplied size is within $k$ gates of the elementary lower bound;
+there is no padding or dead subcircuit.
+
+XORing the equations shows that $T$ is satisfiable only if
+$\operatorname{PAR}_k(u)=0$. Conversely, a choice of $a_1$ determines
+all other $a$ bits along the first $k-1$ equations, and the last holds
+precisely when that parity is zero. Hence
+\begin{equation}\label{eq:cyclic-projection}
+ g(z,u)=\operatorname{PAR}_N(z)\land\neg\operatorname{PAR}_k(u),
+ \qquad \C(g)=N+k-1.
+\end{equation}
+The upper bound uses two parity chains and one binary gate; the lower
+bound follows because all $N+k$ ordinary inputs are essential.
+
+Each positive input has two complementary choices of $a$ and
+$2^{\ell-1}$ odd-parity choices of $b$, giving exactly $2^\ell$
+witnesses. The fibers for distinct even-parity $u$ are disjoint. Fix
+one odd-parity $b_0$ and select
+\[
+ H=\{(a,b_0):a_1=0\},\qquad |H|=2^{k-1}=:h.
+\]
+Exactly one member of $H$ works for each even-parity $u$, so
+$\tau(f)=h$. With
+$A(H)=\sum_v N_v(H)+N_{\mathrm{out}}(H)-1$, the precise support
+counts for the supplied circuit are as follows.
+
+\begin{center}\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Circuit part & Selected $H$ copies & All support assignments\\
+\midrule
+$z$ parity & $N-1$ & $N-1$\\
+$k$ XORs and $k$ XNORs & $8k-8$ & $8k$\\
+Prefix conjunction & $3\cdot2^{k-1}-4$ & $3\cdot2^k-8$\\
+$b$ parity & $\ell-1$ & $2^{\ell+1}-4$\\
+AND of $z$ parity and $T$ & $2^{k-1}$ & $2^k$\\
+Final AND & $2^{k-1}$ & $2^{k+\ell}$\\
+Output OR & $2^{k-1}-1$ & $2^{k+\ell}-1$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For the second row, two cycle edges touch $a_1$. Their gates each have
+two selected assignments, while the remaining edges each have four.
+For the third row, the $j$th prefix, $2\le j<k$, uses
+$a_1,\ldots,a_{j+1}$; the last uses all $a$ bits. Thus its selected
+sum is $\sum_{j=2}^{k-1}2^j+2^{k-1}$, and the full sum doubles it.
+The parity-chain counts sum $2^2,\ldots,2^\ell$. Adding the rows gives
+\begin{align*}
+ A(H)&=N+\ell+8k+3\cdot2^k-15,\\
+ A(\text{full})&=N+8k+4\cdot2^k+2^{\ell+1}+2^{k+\ell+1}-14.
+\end{align*}
+Exactly the $k$ witness vertices $a_i$ have fan-out two; all gate
+outputs have fan-out one. Hence the original shared-vertex count is
+$r=k$, and $s+1-n-m=k$.
+
+Now set $N=2^k$ and $\ell=k$. The comparison becomes
+\begin{center}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Quantity & Order as $k\to\infty$\\
+\midrule
+Actual $\C(g)$ and verifier size & $\Theta(2^k)$\\
+Selected and shared cover $A(H)$ & $\Theta(2^k)$\\
+Independent optimal-cover estimate $h(s+1)-1$ & $\Theta(4^k)$\\
+Full-support estimate $A(\text{full})$ & $\Theta(4^k)$\\
+Shared-vertex estimate $(s+1)2^r$ & $\Theta(4^k)$\\
+Uniform-density and exhaustive estimates & $\Theta(8^k)$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The universal synthesis ceiling is still larger, and the original
+three-way exponent has $\min\{n,m,s+1-n-m\}=k$. Thus simultaneous
+selection and sharing improve the minimum of all those original
+guarantee expressions by a factor $\Theta(2^k)$. This does not say
+that running an old compiler and then semantically simplifying it
+requires $\Theta(4^k)$ gates. The new consistency-graph theorem can
+also recognize this family's easy projection.
+
+\subsection{Even every row mass leaves an exponential ambiguity}
+\label{sec:row-mass-gap}
+
+For the same diagonal family, let $\mu$ be uniform on $H$. Every
+positive row has mass $1/h$, and
+\[
+ E_\mu(t)=2^{n-2}(1-1/h)^t,\qquad B_\mu(t)\le A(H)+1.
+\]
+Taking $t=\lceil h((n-2)\ln2+\ln n+1)\rceil$ makes
+$nE_\mu(t)\le e^{-1}$. Although $t=\Theta(4^k)$, the bound in
+\eqref{eq:occupancy-linear} is $O(2^k)$: repeated local restrictions
+do not add gates.
+
+Instead let $\nu$ be uniform on all witnesses whose $b$ parity is odd.
+\emph{Every positive row still has exactly the same mass $1/h$.}
+Both distributions maximize the minimum row mass, since the $h$
+distinct positive fibers are disjoint. Nevertheless
+\begin{equation}\label{eq:row-mass-gap}
+ \inf_{t\ge0}\{B_\mu(t)+nE_\mu(t)\}=\Theta(2^k),
+ \qquad
+ \inf_{t\ge0}\{B_\nu(t)+nE_\nu(t)\}=\Theta(4^k),
+\end{equation}
+where the infima are over integer sample counts.
+
+Here is a direct proof of the second assertion. There are
+$M=2^{2k-1}$ equally likely witnesses under $\nu$, all distinguished
+by the output support. Thus
+$B_\nu(t)\ge M(1-(1-1/M)^t)$. If $t\ge M/8$, this is at least
+$M(1-e^{-1/8})$. If $t<M/8$, use
+$\ln(1-p)\ge-p/(1-p)$ with $p=1/h\le1/4$ to obtain
+\[
+ E_\nu(t)\ge2^{n-2}e^{-N/6}.
+\]
+This eventually exceeds every constant multiple of $4^k$, since
+$n=N+k$ and $N=2^k$. These cases prove the lower bound on the
+\emph{guarantee expression}. Its upper bound follows from the full
+support count and $E_\nu(t)\to0$. The first assertion follows from
+the preceding choice of $t$ and the actual lower bound on $\C(g)$.
+The same exponential distinction survives the sparse correction
+term, because $E/\log(E+2)$ in the second case is still exponentially
+large in $N$.
+
+Thus even the whole vector $(\mu(W_x))_{x:g(x)=1}$ does not determine
+the cost of this compiler. How the same witnesses collide on internal
+supports is additional information.
+
+\subsection{Better coverage can be a worse circuit choice}
+
+For $L\ge8$, put $n=2L$, $m=2$, and build
+\[
+ f_L(x;y)=
+ (y_1\oplus x_1\oplus\cdots\oplus x_L)
+ \lor
+ (y_2\oplus x_{L+1}\oplus\cdots\oplus x_{2L}),
+\]
+with each XOR chain starting at its witness bit. There are $L$ gates
+with each singleton witness support and one with both witnesses.
+All inputs are essential, proving $\C(f_L)=2L+1$ by the input bound.
+Its projection is nonetheless $g=1$.
+
+Each row excludes just one of the four witnesses, and each excluded
+label occurs equally often. Therefore
+$\min_x\lambda(W_x)=1-\max_y\lambda(y)$, whose unique maximizing
+distribution is the uniform distribution $u$, with value $3/4$.
+For $F_\lambda(t)=B_\lambda(t)+nE_\lambda(t)$, direct occupancy gives
+\begin{align*}
+ B_u(t)&=4L(1-2^{-t})+8(1-(3/4)^t),&
+ E_u(t)&=2^{2L-2t}.
+\end{align*}
+For $t<L$ the correction is at least $8L$; for $t\ge L$ the
+occupancy is at least $4L(1-2^{-L})$. Hence
+$F_u(t)\ge4L(1-2^{-L})$ for every integer $t\ge0$.
+
+Let $v$ instead give equal mass to $00$ and $01$. Its minimum row
+mass is only $1/2$. For $t\ge1$,
+\[
+ B_v(t)=L+(2L+4)(1-2^{-t}),\qquad E_v(t)=2^{2L-1-t}.
+\]
+At $t=2L+\lceil\log(2L)\rceil$ this gives
+\[
+ F_v(t)\le3L+4.5<4L(1-2^{-L})\le\inf_j F_u(j).
+\]
+The unique coverage optimizer is therefore worse for the circuit-cost
+objective. The asymptotic comparison is $3L+O(1)$ versus $4L+O(1)$.
+It also survives any fixed positive constant multiplying the sparse
+correction: for $t<L/2$ that correction grows faster than $L$, while
+for $t\ge L/2$ the uniform occupancy is already $4L-o(1)$.
+
+This objective belongs to the supplied circuit representation. Moving
+the witnesses to the ends of the XOR chains changes its supports
+without changing $f_L$ or the optimal verifier size. Its constant
+projection also emphasizes that an obstruction to a particular
+compilation strategy is not a circuit lower bound.
+
+\subsection{Two additional cautions}
+
+Fiber sizes do not determine covers. For ordinary $u\in\B^k$ and
+witnesses $(c,v)\in\B\times\B^k$, consider rows
+\[
+ W^A_u=\{(0,0^k),(1,u)\},\qquad
+ W^Q_u=\{(0,u),(1,\neg u)\}.
+\]
+Both profiles consist entirely of size-two fibers; both have linear-size
+verifiers with all inputs essential. The first has a common witness
+and cover number one; the second partitions the witness universe
+and has cover number $2^k$.
+
+Nor may each gate choose its own best cover. In the relation
+$f(x_1,x_2;y_1,y_2)=[x\ne y]$, any two distinct witnesses cover every
+input. The set $\{00,01\}$ uses only one $y_1$ value, while
+$\{00,10\}$ uses only one $y_2$ value. No cover achieves both
+simultaneously, because it would fix both bits. The minimum of the
+sum of these two occupancies is three, whereas the sum of their
+separate minima is two. The occupancy theorem uses one common
+distribution and one common sample throughout the circuit.

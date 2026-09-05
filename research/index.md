@@ -1,5 +1,7 @@
-# Circuit nondeterminism: research record
+# Understanding nondeterminism: research record
 
+The public-facing entry point is the [repository overview](../README.md),
+which highlights the restricted-instance SAT and exact-counting algorithm.
 The main deliverable is [main.tex](../main.tex), with its [compiled PDF](../main.pdf)
 and [individual BibTeX entries](../references.bib). This directory records the
 supporting proofs, source comparisons, examples, and verification. The research
@@ -57,7 +59,12 @@ approaching 1/4 in gate count. Its [final source comparison](literature/final-co
 narrows specific access gaps while keeping priority unresolved. This consequence does not use the nonuniform
 ordinary-input synthesis step.
 
-## Status
+## Research snapshot before repository publication
+
+The following status records the September 4 research edition. Its PDF
+metadata and validation counts are historical; see the
+[publication validation](../review-notes/publication-validation.md) for the
+reframed repository edition.
 
 The final focused phase proved the finite stability inequality and the
 critical-structure theorem, including the conclusions for every legal residual
@@ -99,10 +106,11 @@ The older PDF reviews for [pages 1-17](../review-notes/final-pdf-root-review.md)
 and [pages 18-34](../review-notes/final-pdf-review.md) concern the preceding
 34-page draft, not the final expanded manuscript.
 
-Final PDF: 39 pages, 387559 bytes. Its SHA-256 is
+September 4 PDF: 39 pages, 387559 bytes. Its SHA-256 is
 `c2899a9481d64d8ecc98b429532bb62a48b3fbbef66ca69ccb412b4e5c3ac84b`.
-The supporting research corpus has local checkpoints; the project-root
-manuscript is a local artifact, not a publication or submission.
+At that checkpoint, the supporting corpus had local commits and the
+project-root manuscript had not been published. Those commits are preserved
+in the public repository history.
 
 ## Supplementary code
 
