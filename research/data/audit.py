@@ -23,6 +23,10 @@ CHECKS = (
      RESEARCH / "structural/data/realization_expected.txt"),
     (RESEARCH / "examples/data/check_examples.py",
      RESEARCH / "examples/data/expected_output.txt"),
+    (RESEARCH / "walkthrough/data/check_walkthrough.py",
+     RESEARCH / "walkthrough/data/expected_output.txt"),
+    (RESEARCH / "consequences/data/check_queries.py",
+     RESEARCH / "consequences/data/expected_output.txt"),
 )
 
 

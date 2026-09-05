@@ -1,0 +1,331 @@
+\section{From computation paths to shared witnesses}\label{sec:foundations}
+
+Suppose a proposed solution can be checked efficiently. A path through a
+graph, for example, is checked by reading its vertices and checking its
+successive edges. Checking one proposed path and finding a path are different
+tasks. Nondeterminism gives a mathematical language for the first task
+together with an existence condition: an input is accepted when at least
+one legal proposal passes the check. Understanding that condition is the
+starting point for both the circuit-size question and the SAT algorithm.
+
+\subsection{A computation tree describes possibilities}
+
+A deterministic computation has one next step at each nonhalting
+configuration. A nondeterministic computation may have several legal next
+steps. Starting from a fixed input, unfold these possibilities into a tree.
+A root-to-leaf path is one computation, and an accepting leaf records one
+successful computation. The machine accepts the input if there exists an
+accepting path; it rejects if all paths reject. In the time-bounded setting
+used here, every path halts within the specified bound. Its nondeterministic
+running time measures the longest path, not the total number of tree nodes.
+
+After encoding the finitely many possible transitions by a fixed number
+of bits, a path can be specified by its successive choices. A deterministic
+checker receives the original input and this choice record, simulates the
+selected steps, rejects illegal choices, and checks that the outcome accepts.
+Conversely, a machine can guess a proposed choice record and run the checker.
+Thus an accepting path can be replaced by a finite \emph{certificate}, also
+called a \emph{witness}. A certificate need not literally list machine
+transitions: a satisfying assignment or a proposed graph path may be a
+more convenient representation of the same acceptance condition.
+
+This replacement describes existence, without promising an efficient
+procedure for discovering the certificate. An acceptance proof can exhibit
+one certificate. A deterministic rejection procedure must justify the
+absence of every certificate, possibly by exploiting shared structure rather
+than inspecting them one at a time. Nor does the computation tree provide
+free physical parallelism: an implementation that assigns one processor to
+every path must account for those processors, their work, and their storage.
+The abstract path-length measure does not supply that hardware.
+
+\subsection{The verifier relation and its projection}
+
+Write $\B=\{0,1\}$. For the moment fix lengths $n$ and $m$, and let
+\[
+ f:\B^n\times\B^m\longrightarrow\B
+\]
+be a deterministic checker. The string $x$ is the \emph{ordinary input},
+which specifies the question; $y$ is the proposed witness. The equation
+$f(x,y)=1$ means that this particular proposal is valid. The set of valid
+witnesses over $x$, called its \emph{fiber}, is
+\[
+ W_x=\{y\in\B^m:f(x,y)=1\}.
+\]
+Forgetting which witness worked leaves the Boolean function
+\begin{equation}\label{eq:foundations-projection}
+ g(x)=\exists y\,f(x,y)
+     =\bigvee_{y\in\B^m} f(x,y)
+     =\begin{cases}1,&W_x\ne\varnothing,\\0,&W_x=\varnothing.\end{cases}
+\end{equation}
+Here an existential assertion is identified with its Boolean truth value.
+Geometrically, the accepted pairs form a relation inside
+$\B^n\times\B^m$, and $g^{-1}(1)$ is its projection onto the first
+coordinate. Many pairs may project to the same ordinary input. Projection
+retains whether a fiber is empty and discards its size and internal shape.
+
+We represent a checker by a \emph{Boolean circuit}: gates compute Boolean
+operations and wires carry their input and output values, with no directed
+feedback. A gate's \emph{fan-in} counts incoming wires; a value's
+\emph{fan-out} counts its uses. The \emph{output cone} consists of the
+vertices with a directed path to the designated output, including that
+output. Vertices outside it can be discarded. An input is \emph{essential}
+if flipping it changes the function on some assignment of the other inputs;
+merely occurring in the output cone does not guarantee this property.
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Object & Operational meaning \\
+\midrule
+$x\in\B^n$ & The instance held fixed while proposals are checked. \\
+$y\in\B^m$ & One complete proposal, shared by every check that uses it. \\
+$f(x,y)$ & The deterministic answer for that instance and proposal. \\
+$W_x$ & All successful proposals for the fixed instance. \\
+$g(x)$ & Whether there is at least one successful proposal. \\
+$s$ & Number of gates in a supplied verifier circuit, when one is given. \\
+$\C(g)$ & Minimum number of gates in any circuit computing $g$. \\
+\bottomrule
+\end{tabularx}
+\caption{The same relation viewed as verification, existence, and circuit size.
+The gate model is specified below; a supplied size need not be minimum.}
+\label{tab:foundations-vocabulary}
+\end{table}
+
+\paragraph{A running example.}
+Consider the three-gate checker
+\begin{equation}\label{eq:foundations-example}
+ v_1=x\lor y,\qquad v_2=y\oplus z,\qquad
+ f(x,y,z)=v_1\land v_2,
+\end{equation}
+where $\oplus$ denotes exclusive OR: it is one exactly when its two inputs
+differ. In this example $x$ is a single ordinary bit and the ordered pair
+$(y,z)$ is the witness. When $x=0$, the OR gate requires $y=1$, and the
+exclusive OR then requires $z=0$. When $x=1$, the OR gate already outputs
+one, and either pair with $y\ne z$ works. Thus
+\[
+ W_0=\{(1,0)\},\qquad W_1=\{(0,1),(1,0)\}.
+\]
+The accepting triples, written in the order $xyz$, are precisely
+$010$, $101$, and $110$. Both fibers are nonempty, so
+$g(x)=\exists y,z\,f(x,y,z)=1$ for both values of $x$.
+The checker uses three gates; the projected function is constant and needs
+no gates under the free-constants convention. The number of witness choices
+alone therefore cannot determine the difficulty of the projected function.
+
+\subsection{Existential choices are globally consistent}
+
+The witness is chosen once. Every occurrence of the same bit must use the
+same value. A minimal failure of independent local reasoning is
+\[
+ \begin{gathered}
+ (\exists y\in\B\;y=1)\ \land\ (\exists y\in\B\;y=0)
+       \quad\text{is true},\\
+ \exists y\in\B\;(y=1\land y=0)
+       \quad\text{is false}.
+ \end{gathered}
+\]
+In the left expression the quantifiers have separate scopes; renaming
+their variables to $y_1$ and $y_2$ makes the independence explicit.
+In the right expression one value must satisfy both conditions. In general,
+existence of a common witness implies existence of separate witnesses,
+but the converse fails. Independent local existence tests can admit
+combinations that no actual computation realizes.
+
+The same issue is visible inside the running circuit. Hold $x=0$ and
+$z=1$. The relation $x\lor y=1$ can be satisfied with $y=1$, while
+$y\oplus z=1$ can be satisfied with $y=0$. Both local tests succeed,
+but no shared $y$ makes the final AND equal one. A correct algorithm may
+split the two occurrences into temporary variables only if it also enforces
+their equality.
+
+Forward evaluation of a circuit never encounters a directed cycle: each
+gate uses already determined predecessors. Yet the undirected pattern of
+dependencies can contain a cycle. In this example the value of $y$ feeds
+both $v_1$ and $v_2$, and those branches meet at the output gate. Ignoring
+directions gives the cycle $y,v_1,f,v_2,y$. Such a cycle expresses shared
+information, not a feedback loop in the computation. The later consistency
+construction keeps this sharing explicit through equality constraints.
+It is this graph of constraints, rather than the directed evaluation order
+alone, that controls how many unresolved choices an elimination algorithm
+must remember.
+
+For the undirected graphs used below, a vertex's \emph{degree} counts its
+incident edge ends. A graph is \emph{cubic} when every degree is three and
+\emph{subcubic} when every degree is at most three. A \emph{simple} graph
+has no loops or parallel edges. Intermediate constraint graphs may have
+both: a loop joins a vertex to itself and contributes two to its degree,
+while parallel edges join the same pair of vertices more than once.
+
+\subsection{Existence and probability ask different questions}
+
+Giving a witness distribution changes the question. If $Y$ is uniform on
+$\B^m$, then
+\[
+ \Prb[f(x,Y)=1]=\frac{|W_x|}{2^m},
+ \qquad
+ g(x)=1\quad\Longleftrightarrow\quad\Prb[f(x,Y)=1]>0.
+\]
+A positive probability can be exponentially small. If a checker accepts
+only the witness $0^m$, one uniform trial succeeds with probability $2^{-m}$.
+For $r$ independent trials the success probability is
+$1-(1-2^{-m})^r\le r2^{-m}$. Polynomially many such trials do not provide
+a constant success guarantee as $m$ grows. This example concerns uniform
+guessing; the accepted witness is transparent, so it is not a lower bound
+against other search algorithms.
+
+Randomized computation specifies how choices are distributed and requires
+an appropriate success or error guarantee. Existential acceptance specifies
+only that some legal choice succeeds. The two descriptions can use the same
+tree while placing different conditions on its leaves. A good randomized
+search algorithm may exploit the verifier's structure, but its guarantee
+does not follow merely from the existence of one accepting path.
+
+\subsection{From bounded certificates to polynomial verification}
+
+To discuss a complexity class, one verifier must handle inputs of every
+length. A \emph{language} is a set of finite bit strings, representing its
+yes-instances. The class $\mathsf P$ consists of languages decided by a
+deterministic algorithm in time polynomial in the input length. A language
+belongs to $\NP$ when there are a polynomially bounded,
+polynomial-time computable witness length $p(n)$ and a deterministic polynomial-time
+verifier $V$ such that
+\begin{equation}\label{eq:foundations-np}
+ x\in L\quad\Longleftrightarrow\quad
+ \exists y\in\B^{p(|x|)}\; V(x,y)=1.
+\end{equation}
+One may take $p$ to be an integer polynomial bound. Guessing the witness
+and checking it gives a polynomial-time nondeterministic machine.
+Conversely, recording the choices of a polynomial-time nondeterministic
+machine gives a polynomial-length witness that can be checked by simulation.
+Illegal transition codes are rejected. This proves the equivalence of the
+path and verifier definitions at the level of acceptance.
+The question $\mathsf P=\NP$ asks whether every language with such efficient
+verification also has an efficient deterministic decision algorithm.
+
+The fixed length in~\eqref{eq:foundations-np} is a convention that needs
+care when multiplicities matter. Suppose the original verifier accepts
+witnesses of any length at most $p(n)$. Encode such a witness by its length
+$\ell$ in $h=\lceil\log_2(p(n)+1)\rceil$ bits, followed by $p(n)$
+data bits. Require $0\le\ell\le p(n)$ and require every data bit after
+position $\ell$ to be zero; run the original verifier on the first $\ell$
+bits. Each original witness has exactly one valid encoding of length
+$h+p(n)$. Without the suffix-zero check, a length-$\ell$ witness would
+have $2^{p(n)-\ell}$ encodings. Existence would be preserved, but its
+contribution to a count would change.
+
+Similarly, a record of machine choices is not automatically in bijection
+with accepting paths: unused choices after early halting or several bit
+codes for one transition can multiply representations. Canonical padding
+and a one-to-one transition encoding can remove these multiplicities.
+Whenever counting is claimed to be preserved, the relevant bijection must
+be supplied; an acceptance equivalence alone is insufficient.
+
+For each fixed $n$, a polynomial-time verifier can be expressed by a
+polynomial-size Boolean circuit $f_n(x,y)$. One elementary construction
+encodes the verifier's configuration at each time step and connects a
+Boolean circuit for one transition to the next. A polynomial time bound
+limits both the number of steps and the tape region that can be visited,
+so this finite unrolling has polynomial size. The input and witness bits
+remain circuit inputs, while the machine description and time bound fix
+its wiring. This construction is effective across input lengths.
+
+Encoding an accepting computation by jointly satisfied Boolean constraints
+is the classical foundation behind the SAT connection. Cook constructs a
+formula satisfiable exactly when a polynomial-time nondeterministic
+computation accepts, and also discusses bounded existential quantification
+over deterministic polynomial-time relations \citep{Cook1971}.
+Levin's foundational formulation studies universal search problems
+\citep{Levin1973}. The circuit presentation here uses the same
+verification principle. With $x$ fixed, asking whether $f_n(x,y)=1$ for
+some $y$ is circuit satisfiability. Introducing internal gate values and
+enforcing each gate relation converts this to a finite constraint problem;
+once its input assignment is fixed, deterministic evaluation gives exactly
+one consistent assignment to those internal gate values.
+
+SAT abbreviates Boolean satisfiability: does some assignment make the
+given formula or circuit output one? A \emph{literal} is a variable or its
+negation, a \emph{clause} is an OR of literals, and a formula in
+\emph{conjunctive normal form} (CNF) is an AND of clauses. In a $k$-CNF
+each clause has at most $k$ literals. Gate count and clause count are
+different size measures, so the SAT bounds below specify their circuit basis.
+
+\subsection{Four computational tasks and their outputs}
+
+For a fixed ordinary input, \emph{decision} asks whether $W_x$ is nonempty,
+\emph{search} asks for one member when it is nonempty, and \emph{exact
+witness counting} asks for the integer $|W_x|$. For a circuit with both
+ordinary and witness inputs left variable, two totals must also be separated:
+\begin{equation}\label{eq:foundations-counts}
+ N_{\mathrm{pairs}}=\sum_{x\in\B^n}|W_x|
+                  =\sum_{x,y}f(x,y),\qquad
+ N_{\mathrm{proj}}=\sum_{x\in\B^n}[W_x\ne\varnothing]
+                 =\sum_x g(x).
+\end{equation}
+The brackets denote an indicator, equal to one when the condition holds
+and zero otherwise. The first total counts accepting input--witness pairs;
+the second is \emph{projected model counting}, which counts each successful
+ordinary input once. They agree when every nonempty fiber has size one,
+but not in general. In the running example they are three and two.
+
+Across input lengths, the class $\#\mathsf P$ consists of functions counting
+the accepting paths of polynomial-time nondeterministic machines.
+Equivalently, they count accepted fixed-length polynomially bounded
+certificates for a polynomial-time verifier, using the encoding discipline
+above. These are integer-valued functions, whereas $\NP$ describes decision
+problems. The distinction will matter when the appendix compares existence
+with exact counting.
+
+An exact witness count decides existence by comparison with zero. It also
+supports search: fix successive witness bits to a branch with a nonzero
+completion count. The invariant is that the current prefix still extends
+to an accepted witness, so a full prefix obtained this way is a witness.
+This explains the logical reduction; preserving a particular algorithmic
+exponent across these restricted instances needs the additional analysis
+given later. A single decision answer, by contrast, provides no fiber size.
+
+Counts also specify distributions. Uniformly choosing one of the three
+accepting triples in the example gives $\Prb[x=1]=2/3$, whereas uniformly
+choosing a successful projected input gives $\Prb[x=1]=1/2$.
+In general the marginal distribution of a uniform accepting pair assigns
+mass $|W_x|/N_{\mathrm{pairs}}$ to $x$. Forgetting a sampled witness
+therefore favors larger fibers. The exact-counting algorithm in this
+paper counts satisfying assignments to all named circuit inputs; when
+these inputs are partitioned into $x$ and $y$, it computes
+$N_{\mathrm{pairs}}$, without automatically computing $N_{\mathrm{proj}}$.
+
+\subsection{Circuit existence and uniform computation}
+
+A size bound for $g$ asserts that a circuit computing $g$ exists. A
+uniform SAT algorithm receives a circuit description and computes whether
+it has a satisfying assignment. These statements have different inputs
+and quantifiers. At each length there could be a small circuit without
+an efficient procedure for finding it. In particular, a projection that
+happens to be constant has a zero-gate circuit even if recognizing that
+fact from the supplied verifier is difficult.
+
+Across lengths, $\Ppoly$ denotes languages decided by polynomial-size
+circuit families, with no requirement that a single algorithm generate
+the family efficiently. The verifier construction above starts with a
+single polynomial-time algorithm and produces circuits effectively.
+An arbitrary family of polynomial-size verifier circuits need not have
+this uniformity, so its projected language should not be identified with
+$\NP$ merely from the size assertion. Likewise, the polynomial size of
+the verifier says little by itself about the minimum circuit size after
+projection; controlling that increase is a principal question here.
+
+For an algorithm on an explicitly supplied circuit, the input includes its
+gate operations, wiring, output, and named inputs. Polynomial factors in
+the running-time bounds account for this description, including inputs
+that may become unused in normalization. For circuit-size bounds the
+gate count is instead the resource, with the basis and free-wiring
+conventions stated explicitly. Neither measure substitutes for the other.
+
+The rest of the paper studies existential witnesses in this finite
+Boolean setting. Alternation adds universal as well as existential
+choices, and nondeterministic space measures memory along computations;
+both lead to further questions beyond the present scope. Our route is
+more specific: one accepting path gives one complete witness; fixing
+that witness makes verification deterministic; shared values require
+equality; and these equalities let us count consistent assignments by
+combining local tables. The next construction makes that route operational.

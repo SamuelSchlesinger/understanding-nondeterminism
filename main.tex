@@ -14,7 +14,7 @@
 \usepackage[colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,
   urlcolor=blue!45!black]{hyperref}
 \usepackage{bookmark}
-\hypersetup{pdftitle={Understanding Nondeterminism: Faster SAT and Exact Counting for Small Circuits},
+\hypersetup{pdftitle={Understanding Nondeterminism: From Witnesses and Structure to Faster SAT},
   pdfauthor={Samuel Schlesinger},
   pdfsubject={Restricted-instance SAT algorithms and circuit nondeterminism}}
 \usepackage{fancyhdr}
@@ -48,8 +48,8 @@
 \DeclareMathOperator{\fanout}{fanout}
 
 \title{Understanding Nondeterminism:\\
-  Faster SAT and Exact Counting\\
-  for Small Circuits}
+  From Witnesses and Structure\\
+  to Faster SAT}
 \author{Samuel Schlesinger}
 \date{September 5, 2026}
 
@@ -57,6 +57,10 @@
 \maketitle
 \vspace{-1.5em}
 \begin{abstract}
+Nondeterminism asks whether one globally consistent witness makes a
+deterministic check accept. This deep dive follows that idea from
+computation paths and verifier relations to shared circuit values,
+exact counting tables, and structural bounds on eliminating witnesses.
 We derive a SAT and exact-counting algorithm that beats exhaustive
 search for single-output Boolean circuits with $u$ inputs and
 $s\le(4-\gamma)u$ gates, for every fixed $0<\gamma<4$, over the
@@ -79,6 +83,8 @@ critical gate budget and realize nearly critical supplied budgets
 with easy projections, exposing the role of nonminimal verifiers.
 A joint witness-sampling and shared-computation bound gives further
 improvements, illustrated by analytical families.
+Pinning input tables also retains the counting exponent for search,
+lexicographic rank and unrank, and expected-time exact uniform sampling.
 
 The algorithmic improvement is over exhaustive search on the stated
 restricted instances. Historical priority and best-known
@@ -93,6 +99,8 @@ checks of supporting constructions.
 \tableofcontents
 \clearpage
 
+\input{sections/foundations}
+\input{sections/counting-walkthrough}
 \input{sections/algorithm-overview}
 
 \section{The question and its quantifiers}
@@ -153,13 +161,18 @@ therefore concern a worst case, a specified family, or a specified
 distribution.
 
 \paragraph{Reading route and contributions.}
-After the algorithmic overview, the next three sections establish the
-elementary bounds and explain
-why counting witnesses alone misses reusable computation.
+Sections~\ref{sec:foundations}--\ref{sec:algorithm-overview}
+build the route from computation paths to shared witnesses, evaluate a
+complete counting-table example, and state the restricted SAT guarantee.
+The next two sections establish the elementary circuit-size bounds and
+explain why witness counts alone miss reusable computation.
 Section~\ref{sec:consistency-graph} improves the size exponent by combining
-a circuit-specific consistency budget with established graph-width
-tools, and proves the uniform counting consequence in
+a circuit-specific consistency budget with established graph-width tools,
+and proves the uniform counting algorithm in
 Section~\ref{sec:counting-algorithm}.
+Section~\ref{sec:algorithm-consequences} then derives polynomial-time
+counting at low cycle rank, sharper input-sensitive exponents, search,
+lexicographic indexing, and exact uniform generation.
 Section~\ref{sec:critical-balance} derives necessary structure for
 amplification at the critical gate budget.
 Section~\ref{sec:kernel-realization} then realizes cubic kernels with
@@ -473,6 +486,11 @@ transition. The argument is specific to gate count and fan-in two.
 \end{remark}
 
 \input{sections/structure}
+\input{sections/algorithm-consequences}
+
+\section{What the structural bounds do and do not force}
+\input{sections/critical-balance}
+\input{sections/realization}
 
 \section{Many witnesses give small nonuniform circuits}
 
@@ -525,13 +543,9 @@ every $x$, yet its projection is constant.
 \input{sections/coverage}
 
 \paragraph{Consistency obstructs naive aggregation.}
-In general,
-\[
- \exists y\,(A(x,y)\land B(x,y))
- \not\equiv(\exists y\,A(x,y))\land(\exists y\,B(x,y)).
-\]
-Take $A=y_1$ and $B=\neg y_1$. Both separate existential statements
-hold, but their conjunction has no common witness. Lemma~\ref{lem:forest}
+The shared-witness counterexample in Section~\ref{sec:foundations}
+shows why existence cannot be pushed independently through an AND gate.
+Lemma~\ref{lem:forest}
 works because it proves that the witness sets being combined are
 disjoint. The cut construction restores that condition while retaining
 the defining equations. This is also why identities that compress
@@ -721,7 +735,8 @@ is far beyond the unconditional baseline above.
 
 \section{A precise conditional version of exponential hardness}
 
-Ordinary ETH and SETH are hypotheses about algorithms. A lower bound
+The Exponential Time Hypothesis (ETH) and Strong Exponential Time
+Hypothesis (SETH) are hypotheses about algorithms. A lower bound
 on the minimum size of a nonuniform circuit requires an appropriate
 circuit hypothesis, or an additional argument connecting the two.
 We explicitly use the nonuniform version of SETH, as formulated, for

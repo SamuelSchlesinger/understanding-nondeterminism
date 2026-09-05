@@ -1,3 +1,13 @@
+@article{JerrumValiantVazirani1986,
+  author = {Mark R. Jerrum and Leslie G. Valiant and Vijay V. Vazirani},
+  title = {Random Generation of Combinatorial Structures from a Uniform Distribution},
+  journal = {Theoretical Computer Science},
+  volume = {43}, pages = {169--188}, year = {1986},
+  doi = {10.1016/0304-3975(86)90174-X},
+  url = {https://ics.uci.edu/~vazirani/JVV.pdf},
+  note = {Section 2 and Theorem 3.3; the source generator convention permits failure}
+}
+
 @article{Lupanov1958,
   author = {Oleg B. Lupanov},
   title = {On a Method of Circuit Synthesis},
@@ -110,11 +120,17 @@
   url = {https://web.vu.lt/mif/s.jukna/boolean/blaues_book.pdf}
 }
 
-@misc{Morizumi2015,
+@inproceedings{Morizumi2015,
   author = {Hiroki Morizumi},
   title = {Lower Bounds for the Size of Nondeterministic Circuits},
+  booktitle = {Computing and Combinatorics (COCOON 2015)},
+  series = {Lecture Notes in Computer Science},
+  volume = {9198},
+  pages = {289--296},
+  publisher = {Springer},
   year = {2015},
-  howpublished = {arXiv:1504.06731v1},
+  doi = {10.1007/978-3-319-21398-9_23},
+  note = {Inspected author preprint arXiv:1504.06731v1, Theorem 2},
   url = {https://arxiv.org/abs/1504.06731v1}
 }
 
@@ -307,8 +323,9 @@
   journal = {Theoretical Computer Science},
   volume = {719}, pages = {46--63}, year = {2018},
   doi = {10.1016/j.tcs.2017.11.008},
-  note = {Expanded version of the MFCS 2016 paper},
-  url = {https://eccc.weizmann.ac.il/report/2016/022/}
+  note = {Expanded MFCS 2016 paper; inspected ECCC TR16-022 revision 2,
+          December 1, 2017, which corrects Lemma 11},
+  url = {https://eccc.weizmann.ac.il/report/2016/022/revision/2/download}
 }
 
 @article{Allender2014,
@@ -331,4 +348,28 @@
   pages = {247--261}, year = {2018},
   doi = {10.1137/1.9781611975031.18},
   url = {https://sites.cs.ucsb.edu/~daniello/papers/boundedTreewidthCircuitSatSODA18.pdf}
+}
+
+@inproceedings{Cook1971,
+  author = {Cook, Stephen A.},
+  title = {The Complexity of Theorem-Proving Procedures},
+  booktitle = {Proceedings of the Third Annual ACM Symposium on Theory of Computing},
+  year = {1971},
+  pages = {151--158},
+  publisher = {Association for Computing Machinery},
+  doi = {10.1145/800157.805047},
+  url = {https://www.cs.cmu.edu/~15455/resources/Cook1971-complx-thm-proof.pdf},
+  note = {Primary article transcription; Theorem 1 proof and Section 2}
+}
+
+@article{Levin1973,
+  author = {Levin, Leonid A.},
+  title = {Universal Sequential Search Problems},
+  journal = {Problems of Information Transmission},
+  volume = {9},
+  number = {3},
+  pages = {265--266},
+  year = {1973},
+  note = {English translation; Russian original in Problemy Peredachi Informatsii 9(3), 115--116},
+  url = {https://www.mathnet.ru/eng/ppi914}
 }

@@ -6,6 +6,41 @@ The [statement matrix](literature/statement-matrix.md) records exact models,
 theorem locations, and retrieval limits. Source inspection does not establish
 priority for a newly combined statement.
 
+<a id="cook-sat"></a>
+## cook-sat
+
+Stephen A. Cook. The Complexity of Theorem-Proving Procedures. Proceedings of
+the Third Annual ACM Symposium on Theory of Computing, 151-158, 1971.
+DOI:10.1145/800157.805047. Theorem 1 proof and Section 2 inspected in the
+[primary article transcription](https://www.cs.cmu.edu/~15455/resources/Cook1971-complx-thm-proof.pdf).
+The cited construction encodes an accepting computation by a satisfiable formula;
+the original theorem is not silently restated as a modern many-one definition.
+
+[Primary record](https://doi.org/10.1145/800157.805047).
+
+<a id="levin-search"></a>
+## levin-search
+
+Leonid A. Levin. Universal Sequential Search Problems. Problemy Peredachi
+Informatsii 9(3), 115-116, 1973; English translation in Problems of Information
+Transmission 9(3), 265-266. The journal record and linked original Russian
+text were inspected for the universal-search formulation. This source is not
+used to establish the manuscript's numerical circuit bound.
+
+[Primary record and full-text link](https://www.mathnet.ru/eng/ppi914).
+
+<a id="jvv-generation"></a>
+## jvv-generation
+
+Mark R. Jerrum, Leslie G. Valiant, and Vijay V. Vazirani. Random generation
+of combinatorial structures from a uniform distribution. Theoretical Computer
+Science 43, 169-188, 1986. DOI:10.1016/0304-3975(86)90174-X. Section 2
+and Theorem 3.3 inspected in the [author-hosted primary PDF](https://ics.uci.edu/~vazirani/JVV.pdf).
+The source allows a failure outcome; the manuscript's rejection sampler
+returns a solution with probability one and has an expected-time guarantee.
+
+[Primary record](https://doi.org/10.1016/0304-3975(86)90174-X).
+
 <a id="aji-gdl"></a>
 ## aji-gdl
 
@@ -128,7 +163,7 @@ Fedor V. Fomin and Kjartan Hoie. Pathwidth of cubic graphs and exact algorithms.
 <a id="gkst-elimination"></a>
 ## gkst-elimination
 
-Alexander Golovnev, Alexander S. Kulikov, Alexander V. Smal, and Suguru Tamaki. Gate elimination: Circuit size lower bounds and #SAT upper bounds. Theoretical Computer Science 719, 46-63, 2018. DOI:10.1016/j.tcs.2017.11.008. Conference version: Circuit Size Lower Bounds and #SAT Upper Bounds Through a General Framework, MFCS 2016, LIPIcs 58, article 45, DOI:10.4230/LIPIcs.MFCS.2016.45. Full author preprint ECCC TR16-022 inspected.
+Alexander Golovnev, Alexander S. Kulikov, Alexander V. Smal, and Suguru Tamaki. Gate elimination: Circuit size lower bounds and #SAT upper bounds. Theoretical Computer Science 719, 46-63, 2018. DOI:10.1016/j.tcs.2017.11.008. Conference version: Circuit Size Lower Bounds and #SAT Upper Bounds Through a General Framework, MFCS 2016, LIPIcs 58, article 45, DOI:10.4230/LIPIcs.MFCS.2016.45. Full author preprint ECCC TR16-022, revision 2 (2017-12-01), inspected. This revision corrects Lemma 11; the cited counting thresholds remain in its abstract. [Inspected revision PDF](https://eccc.weizmann.ac.il/report/2016/022/revision/2/download).
 
 [Primary record](https://doi.org/10.1016/j.tcs.2017.11.008).
 

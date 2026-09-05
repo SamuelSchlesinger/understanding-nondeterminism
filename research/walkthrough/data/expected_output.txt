@@ -1,0 +1,10 @@
+Unique gate extensions: 8 toy inputs; 4096 gate triples x 8 inputs
+Accepting triples: 010 101 110; total=3; x-fibers=1,2
+Incidence graph: vertices=10 edges=10 connected=yes cycle-rank=1
+Pinned incidence counts: all 27 partial input assignments agree
+Elimination: A=[[1,1],[0,2]] B=[[1,1],[1,1]]; shared=3 independent=6
+Equality expansions: all external assignments at degrees 3 through 6
+Loop: diagonal=9 full-sum=17; parallel: joint=70 trace=70 full-sum=138
+Parallel contraction guard: all 256 pairs of binary 2x2 tables
+Frontier XOR transition: [5,5]; positivity identities: all r,s in 0..8
+PASS: finite local mechanisms only; no full solver or asymptotic layout check

@@ -7,7 +7,18 @@ and [individual BibTeX entries](../references.bib). This directory records the
 supporting proofs, source comparisons, examples, and verification. The research
 phase began from a 12-page note dated September 4, 2026.
 
+The expanded edition adds the foundations, complete numerical and symbolic
+walkthrough, and proved counting-query consequences. Its current review and
+verification evidence is recorded in the
+[deep-dive validation](../review-notes/deep-dive-validation.md); the status
+snapshots below retain their historical counts and page numbers.
+
 ## Objective and completion requirements
+
+The current expansion is governed by the
+[deep-dive plan](../review-notes/deep-dive-plan.md): develop the operational
+foundations and a worked algorithmic bridge, derive further justified
+consequences, and integrate them with the existing proofs before publication.
 
 Develop several substantive, proved contributions explaining when existential
 projection is easy, integrate them with prior results, and produce a rigorous,
@@ -21,6 +32,12 @@ independent proof and source review; a checked bibliography and readable PDF;
 and an accurate account of the actual AI-assisted methods.
 
 ## Results and reading route
+
+The expanded pedagogical route begins with
+[paths, certificates, and projection](foundations/index.md), proceeds through
+[a complete counting-table example](walkthrough/index.md), and derives
+[low-excess counting, search, indexing, and exact sampling](consequences/index.md).
+The following structural and coverage results supply the deeper theory.
 
 1. [Structural elimination](structural/index.md), with the
    [full constructive proof](structural/proof.md): the consistency budget
@@ -120,6 +137,8 @@ in the public repository history.
 - [Exact kernel realization and graph reductions](structural/data/check_realization.py).
 - [Worked-family arithmetic and evaluations](examples/data/check_examples.py).
 - [Corpus audit](data/audit.py), run from the project root with `make check`.
+- [Worked counting identities and partial evidence](walkthrough/data/check_walkthrough.py).
+- [Prefix counts, rank, and unrank](consequences/data/check_queries.py).
 
 The audit checks links and citation keys, reruns the finite checks, and compares
 output with retained records. These are implementation checks or proofs of

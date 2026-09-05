@@ -1,0 +1,6 @@
+Explicit relations on 0..3 bits: 278; prefix partitions: 1844: OK
+Satisfying assignments ranked and unranked: 1061: OK
+Invalid ranks and nonsolutions rejected: 1617: OK
+Exact rejection probabilities for solution counts 1..16: OK
+Running example: ranks 0,1,2 map to 010,101,110; first-bit counts 1,2: OK
+Scope: finite explicit counting oracles; no asymptotic layout or solver benchmark.

@@ -1,0 +1,229 @@
+\section{What the algorithm gives beyond a yes-or-no answer}
+\label{sec:algorithm-consequences}
+
+The consistency construction yields more than a gate-only exponent.
+It identifies which part of a supplied circuit makes counting expensive,
+and its exact counts can guide the construction of individual solutions.
+These are consequences of the proved algorithm, using established
+conditioning and self-reduction ideas. They are not claims of historical
+priority for search or sampling from counts.
+
+\subsection{The excess above a tree is a useful parameter}
+
+Let $s$ be the supplied gate budget, $u$ the declared input count, and
+$b$ the inputs left in a nontrivial normalized output cone. Define
+\[
+ d=s+1-b.
+\]
+The input-count lemma ensures $d\ge0$. The graph proof gives
+$\kappa\le d$: every used input consumes one unit of the same budget
+that would otherwise permit a consistency cycle. This is a statement
+about the supplied representation, not its minimum possible size.
+
+\begin{corollary}[Counting with logarithmic excess]
+\label{cor:low-excess}
+For each fixed $\delta>0$, exact counting takes time
+\[
+ \poly_\delta(s+u+1)\,2^{(1/3+\delta)d}.
+\]
+In particular, for every fixed $c\ge0$, circuits with
+$d\le c\log(s+u+1)$ can be counted in polynomial time. The same
+conclusion holds whenever $\kappa=O(\log(s+u+1))$, even if the
+gate-minus-input estimate $d$ is larger.
+\end{corollary}
+\begin{proof}
+The proof of Corollary~\ref{cor:gate-counting} first obtains time
+$\poly_\delta(s+u+1)2^{(1/3+\delta)\kappa}$ and then bounds
+$\kappa$ by $d$. If $d\le c\log(s+u+1)$, the exponential factor
+is at most $(s+u+1)^{c(1/3+\delta)}$. Fixing, for example,
+$\delta=1/6$ makes the total a polynomial of fixed degree.
+The same calculation applies directly to $\kappa$.
+\end{proof}
+
+A binary AND tree on $u$ inputs has $s=u-1$, $b=u$, and $d=0$.
+Its single accepting assignment is easy to count even though there
+are $2^u$ candidate assignments. The explanation is not that few
+solutions make counting easy: it is that the circuit has no excess
+consistency to maintain. The running three-gate example has $b=3$
+and $d=1$; its entire network also reduces by the elementary table
+operations. Neither example needs the asymptotic graph theorem.
+
+\paragraph{A sharper reading of the four-gates threshold.}
+The $1/4$ coefficient protects against every possible value of $b$.
+If all declared inputs survive normalization, $b=u$, the more precise
+bound has limiting input coefficient $(c-1)/3$ at gate budget
+$s\le cu$, provided $1\le c<4$. In contrast, the gate-only
+coefficient is $c/4$. For example:
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Gate budget & Arbitrary used-input count & All $u$ inputs remain used\\
+\midrule
+$s\le2u$ & $1/2$ & $1/3$\\
+$s\le3u$ & $3/4$ & $2/3$\\
+$s\le(7/2)u$ & $7/8$ & $5/6$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The entries are limiting coefficients in an exponent of $2^u$.
+Every entry requires arbitrarily small fixed positive slack and a
+polynomial prefactor depending on that slack; these are not timing
+measurements or endpoint bounds. Substituting $b=u$ into the proved
+formula gives the right column directly.
+
+More generally, with $r=b/u$ and $c=s/u$, the limiting envelope is
+\[
+ \min\{r,(c-r)/3\},
+\]
+up to fixed positive slack and the additive gate-budget constant.
+Increasing $b$ makes enumeration more expensive but leaves fewer
+cycles for contraction. The two costs balance near $b=(s+1)/4$.
+Thus the most expensive value in this guarantee need not be the
+largest number of used inputs. This is a balance of upper bounds,
+not an example attaining either running-time bound or a hardness
+theorem. Unused inputs merely multiply the exact answer by a power
+of two; writing that answer costs polynomially many bits.
+
+\subsection{Conditioning without losing the original budget}
+
+Suppose some input values have already been chosen. We want to count
+how many accepting assignments extend those choices. Re-normalizing
+the restricted circuit changes $b$, so substituting its new parameters
+into $s+1-b$ does not itself prove preservation of the original bound.
+There is a simpler way: keep the original graph and change its tables.
+
+Preserving only the unconditioned total would not justify this step.
+The predicates $x\land\neg z$ and $\neg x\land z$ each have one
+model on the named universe $(x,z)$, but pinning $x=1$ leaves one
+model of the first and none of the second. We need the stronger
+invariant that every boundary-conditioned count is preserved.
+
+\begin{lemma}[Pinning preserves the counting layout]
+\label{lem:pinning-layout}
+Fix a nontrivial normalized output cone and its original consistency
+graph of rank $\kappa$. For any partial assignment $e$ to the $u$
+declared inputs, the number $Z(e)$ of satisfying assignments extending
+$e$ can be computed in time
+\begin{equation}\label{eq:pinned-counting}
+ T_\delta=\poly_\delta(s+u+1)\,
+ 2^{\min\{b,(1/3+\delta)\kappa\}},
+ \qquad \delta>0\text{ fixed},
+\end{equation}
+using the original graph reduction and vertex layout for every query.
+Space is bounded by a polynomial times the same exponential factor.
+Constant and designated-input outputs can be handled directly.
+\end{lemma}
+\begin{proof}
+At a used input fixed by $e$, replace its equality table by the table
+that is one precisely when all incident values equal the prescribed
+bit. No vertex, edge, or index is added. When a high-degree equality
+table is expanded as a ternary tree, impose the prescribed bit at one
+of its ternary tables. The other equality tables propagate that bit
+through the tree. A consistent external assignment still has exactly
+one internal extension, and an inconsistent one has none.
+
+The low-degree, loop, and parallel-edge reductions depend only on the
+graph and are exact integer identities for the modified tables as
+well. The same residual graph and layout therefore give the same
+frontier sizes and operation bound. All entries remain counts of
+assignments to $O(s+1)$ internal indices, with polynomial bit length.
+For each originally unused input not fixed by $e$, multiply the
+answer by two; pinned unused inputs contribute one instead. This
+factor has at most $u+1$ bits.
+
+Alternatively enumerate the original $b$ used input bits, discarding
+assignments inconsistent with $e$. This costs at most a polynomial
+times $2^b$. Choose between the two original guarantees. The graph
+and layout can be prepared once, while the integer tables are
+recomputed for each query. Storing queries sequentially suffices for
+the stated space bound.
+\end{proof}
+
+\subsection{Search, rank, and exact uniform generation}
+
+Order the declared input bits once and use lexicographic order on
+their assignments, with $0<1$. A prefix $p$ has two disjoint sets
+of extensions, so its exact counts satisfy
+\[
+ Z(p)=Z(p0)+Z(p1).
+\]
+This identity is the bridge from counting all solutions to selecting
+one. Count-guided construction and generation are classical; see
+\citet[Theorem 3.3 and the discussion of fair coins in Section 2]
+{JerrumValiantVazirani1986}. The point here is that pinning retains
+the original circuit's numerical bound.
+
+\begin{corollary}[Constructing and indexing satisfying assignments]
+\label{cor:search-unrank}
+Within a polynomial factor of \eqref{eq:pinned-counting}, one can
+deterministically find a satisfying assignment or report that none
+exists; compute the zero-based lexicographic rank of a supplied
+satisfying assignment; or reconstruct the satisfying assignment of
+any supplied rank $R$ with $0\le R<Z(\varnothing)$.
+The same gate-only coefficient approaching $1/4$ consequently
+applies to all three tasks.
+\end{corollary}
+\begin{proof}
+First compute $Z=Z(\varnothing)$. If $Z=0$, report unsatisfiability.
+Otherwise, maintain a prefix $p$, an integer $R$, and the invariant
+$0\le R<Z(p)$. Compute $A=Z(p0)$. If $R<A$, append zero; otherwise
+append one and replace $R$ by $R-A$. The identity above preserves
+the invariant. After $u$ steps the prefix is the unique satisfying
+assignment of the original rank. Taking $R=0$ gives the first
+satisfying assignment.
+
+Conversely, verify a supplied assignment by direct circuit evaluation.
+Along its prefixes, add $Z(p0)$ to an accumulator whenever its next
+bit is one. These are exactly the disjoint lexicographically earlier
+branches, so their sum is the rank. Both procedures use at most $u+1$
+count queries and arithmetic on $O(u+1)$-bit integers. Sequential
+queries multiply time by a polynomial and do not multiply space.
+Finally use $\kappa\le s+1-b$ and the same balancing calculation
+as in Corollary~\ref{cor:gate-counting}.
+\end{proof}
+
+For the running example the accepting assignments are
+$010,101,110$, in that order. The zero branch for the first bit has
+one accepting extension and the one branch has two. Unranking $R=2$
+therefore selects the one branch and changes the residual rank to
+one; continuing in the same way selects $110$. Choosing each
+nonempty branch with probability one half would give the first
+assignment probability $1/2$, rather than $1/3$.
+
+\begin{corollary}[Exact uniform sampling with expected time]
+\label{cor:exact-sampling}
+For a satisfiable circuit, an exactly uniform satisfying assignment
+can be sampled with expected running time bounded by a polynomial
+times the exponential factor in \eqref{eq:pinned-counting}, using
+independent fair random bits. Unsatisfiability is reported
+deterministically within the same counting bound.
+\end{corollary}
+\begin{proof}
+Compute $Z$. If $Z=0$, report unsatisfiability. If $Z=1$, unrank zero. For $Z>1$, put
+$L=\lceil\log Z\rceil$. Draw $L$ independent fair bits, interpreted
+as an integer $R\in\{0,\ldots,2^L-1\}$. Reject and repeat when
+$R\ge Z$. Each trial accepts with probability $Z/2^L>1/2$, so
+fewer than two trials are needed in expectation. Conditional on
+acceptance, every rank is equally likely. Unranking is a bijection,
+so every satisfying assignment has probability exactly $1/Z$.
+Since $L\le u$, the expected random-bit and integer-processing
+cost is polynomial, and Corollary~\ref{cor:search-unrank} bounds the
+deterministic remainder.
+\end{proof}
+
+The sampler returns a solution with probability one and in finite expected
+time; a measure-zero random stream can reject forever. The expected-time
+qualifier is essential for this fair-bit implementation. With a fixed worst-case bound of $L$ coin
+flips, every output probability is an integer multiple of $2^{-L}$,
+even if some branches stop early. It cannot be exactly $1/3$ on
+each of three solutions. Allowing rejection, or allowing a declared
+failure outcome, resolves this elementary obstruction; silently
+assuming a unit-cost arbitrary biased coin does not.
+
+Finally, a uniform satisfying \emph{full assignment} need not give
+a uniform positive \emph{projected input}. In the running example,
+projecting the uniform distribution on $010,101,110$ onto $x$ gives
+probabilities $1/3$ and $2/3$. Uniformity over witnesses weights each
+ordinary input by its number of witnesses. The algorithm here counts
+and samples full satisfying assignments; counting or sampling distinct
+projected inputs is a different task.

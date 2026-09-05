@@ -25,6 +25,16 @@ reframed the manuscript around its SAT algorithm and assembled the
 manuscript, supporting corpus, and reproducibility workflow as the
 public \texttt{understanding-nondeterminism} repository.
 
+A further user-directed expansion developed the manuscript as a deep dive
+from computation paths to the counting algorithm. A decomposition critic
+reviewed that plan before separate authors drafted the foundations and
+worked tables. The root developed the low-excess and conditional-count
+consequences, then integrated the sections. Independent mandates reviewed
+mathematical accuracy, pedagogical coherence, source attribution, and the
+pinning and generation arguments. The revisions made the reading order
+follow the worked example and stated exact sampling's probability-one
+termination and expected-time contract explicitly.
+
 This organization supplies additional opportunities to detect errors;
 it does not turn agreement between agents into mathematical evidence.
 The agents can share training-related blind spots. The mathematical
@@ -50,7 +60,7 @@ new bounds explain that the old guarantee expressions miss. Counterexamples
 prevented stronger but false interpretations, such as choosing a
 different optimal witness cover independently at each gate.
 
-The final research phase focused on the critical three-way balance.
+An earlier focused research phase examined the critical three-way balance.
 A finite stability inequality was proved before taking fixed-slack
 limits, yielding necessary input, cycle-loss, and width conditions.
 An independent construction then realized cubic kernels with nearly
@@ -121,8 +131,23 @@ reductions and contraction on supplied decompositions. The $1/5$
 rate follows analytically from that cited theorem and the proved
 conversion, not from the finite graphs tested.
 The tensor checker evaluates Boolean projections. The integer-counting
-corollary was checked analytically; no implementation or timing study
-of its full algorithm is claimed.
+corollary is justified analytically. The expanded walkthrough adds finite
+integer-table checks, while the search and generation validator uses explicit
+finite counting oracles. No implementation or timing study of the full
+asymptotic counting algorithm is claimed.
+
+Two further retained suites support the pedagogical expansion. The walkthrough
+checks all 4,096 triples of binary gate tables on all eight input assignments
+for unique internal extension; all 27 partial pinnings of the running example;
+equality splitting at degrees three through six; all 256 pairs of binary
+$2\times2$ tables under joint parallel contraction; and exact loop and
+frontier fixtures. The query suite checks every Boolean relation on zero
+through three bits: 278 relations, 1,844 prefix partitions, and 1,061
+satisfying assignments under rank and unrank. It also checks 1,617 invalid
+ranks or nonsolutions and exact rejection probabilities for solution counts
+one through sixteen. These are finite comparisons against explicit
+enumeration and rational arithmetic. They neither implement the general
+layout theorem nor establish asymptotic performance experimentally.
 
 The new realization checker addresses a specific possible mismatch:
 a graph sketch might fail to be an equality splitting of the actual

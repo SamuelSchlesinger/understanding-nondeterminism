@@ -1,8 +1,11 @@
-# Understanding nondeterminism
+# Understanding Nondeterminism
+
+*From Witnesses and Structure to Faster SAT*
 
 **Faster SAT and exact counting for circuits with fewer than four gates per input.**
 
-This research manuscript derives an algorithm that beats exhaustive search on
+This deep dive follows nondeterministic computation from accepting paths to
+shared witnesses, then turns that understanding into an algorithm that beats exhaustive search on
 single-output Boolean circuits with `u` inputs and `s <= (4 - gamma)u` gates,
 for every fixed `0 < gamma < 4`. Gates may compute any Boolean function of at
 most two inputs (the full `B2` basis), and fanout is unrestricted.
@@ -67,6 +70,34 @@ conversion, operation count, and polynomial bit cost. Its width and tensor
 methods build on established work; the [source comparison](research/literature/final-comparison.md)
 records what has and has not been checked.
 
+## Read it as a deep dive
+
+The paper develops one three-gate example throughout: its accepting assignments
+are `010`, `101`, and `110`. This makes the abstract distinctions concrete:
+why a witness must be shared globally, why internal gate values add no extra
+solutions, and why a uniform full assignment can bias its projected input.
+
+1. **Paths, certificates, and projection.** Learn what nondeterministic
+   acceptance means, how it differs from random guessing, and how uniform
+   algorithms differ from nonuniform circuit-size bounds.
+2. **A complete calculation.** Follow gate equations into equality tables,
+   exact contractions, and the frontier state retained between processed and
+   unprocessed parts of a graph.
+3. **The general algorithm.** Derive the consistency budget and graph-width
+   bound, then recover the SAT and exact-counting exponent above.
+4. **Further consequences.** Logarithmic consistency rank gives polynomial-time
+   counting. Pinning inputs preserves the original layout and exponent, giving
+   deterministic search, lexicographic ranking and unranking, and exact uniform
+   sampling in expected time using fair random bits.
+5. **The limits of the explanation.** Compare symbolic projection, witness
+   coverage, supplied circuit structure, intrinsic complexity, and the open
+   lower-bound questions.
+
+These consequences are proved in the text. Search and generation use the
+classical counting-to-generation mechanism; no priority claim is made for it.
+Sampling is uniform over full satisfying assignments, and does not generally
+produce uniform distinct projected inputs.
+
 ## The broader nondeterminism question
 
 The same construction studies existential projection, `g(x) = exists y f(x,y)`,
@@ -98,19 +129,19 @@ The PDF build requires `latexmk`, BibTeX, and the LaTeX packages declared in
 TeX Live or MacTeX installation supplies them. CI runs the same checks and
 builds the PDF; its workflow records the Ubuntu package list.
 
-`make check` validates corpus links and citation keys, reruns five finite
+`make check` validates corpus links and citation keys, reruns seven finite
 verification suites, and compares their outputs with retained records.
 Those finite domains check the supporting constructions; the general results
 depend on the written proofs and cited graph theorem. In particular, the
-checker does not implement the asymptotic layout construction or the full
-integer-counting algorithm. `make clean` removes LaTeX intermediates and keeps
+checks cover local integer tables and counting-oracle queries, but do not
+implement the asymptotic layout construction or the full counting algorithm. `make clean` removes LaTeX intermediates and keeps
 the committed reading copy, `main.pdf`.
 
 ## Repository guide
 
 | Path | Contents |
 | --- | --- |
-| [main.pdf](main.pdf) | Compiled manuscript, starting with the SAT algorithm |
+| [main.pdf](main.pdf) | Deep dive with the restricted SAT result highlighted in the abstract |
 | [main.tex](main.tex), [sections/](sections/) | Editable manuscript and proofs |
 | [references.bib](references.bib) | Separate BibTeX entries for cited sources |
 | [research/](research/index.md) | Supporting derivations, examples, source comparisons, and finite checks |

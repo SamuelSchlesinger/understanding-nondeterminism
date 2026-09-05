@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "Please cite this manuscript when using its results or supporting code."
-title: "Understanding Nondeterminism: Faster SAT and Exact Counting for Small Circuits"
+title: "Understanding Nondeterminism: From Witnesses and Structure to Faster SAT"
 authors:
   - family-names: Schlesinger
     given-names: Samuel
@@ -11,8 +11,10 @@ license:
   - MIT
   - CC-BY-4.0
 abstract: >-
-  An AI-assisted research manuscript deriving an exponential-space SAT and exact
-  counting algorithm for B2 circuits, with an exponential saving over exhaustive
-  search below four gates per input at any fixed positive gap. Also develops
-  existential-projection circuit bounds and witness-coverage results. Historical
-  priority of the precise combined bounds remains unestablished.
+  An AI-assisted deep dive from nondeterministic computation paths and shared
+  witnesses to an exponential-space SAT and exact-counting algorithm for B2
+  circuits. At any fixed positive gap below four gates per input, the algorithm
+  saves an exponential factor over exhaustive search. Further results cover
+  low-cycle-rank counting, search, lexicographic indexing, exact uniform sampling,
+  existential-projection circuit bounds, and witness coverage. Historical priority
+  of the precise combined bounds remains unestablished.
