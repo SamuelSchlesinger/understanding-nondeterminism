@@ -2,6 +2,11 @@
 
 Parent: [synthesis](index.md).
 
+This is the historical record of the September 4 research phase, before
+publication was requested. Its artifact sizes, page counts, and statements
+about publication status refer to that edition. The current repository edition
+has a separate [publication validation](../../review-notes/publication-validation.md).
+
 ## Actual setup
 
 - A user directed an OpenAI Codex agent to investigate existential projection
