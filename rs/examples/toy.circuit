@@ -1,0 +1,6 @@
+# The note's example: accepting assignments 010, 101, 110.
+inputs 3
+a = or x0 x1
+b = xor x1 x2
+c = and a b
+output c

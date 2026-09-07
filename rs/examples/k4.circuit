@@ -1,0 +1,15 @@
+# Vertex covers of K4. Exactly 5 assignments satisfy all six edges.
+# The supplied counting network retains a nonempty cubic kernel.
+inputs 4
+e01 = or x0 x1
+e02 = or x0 x2
+e03 = or x0 x3
+e12 = or x1 x2
+e13 = or x1 x3
+e23 = or x2 x3
+a = and e01 e02
+b = and e03 e12
+c = and e13 e23
+d = and a b
+out = and d c
+output out
