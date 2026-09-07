@@ -1,0 +1,365 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{amsmath,amsthm,mathtools}
+\usepackage{newpxtext,newpxmath}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[numbers,sort&compress]{natbib}
+\renewcommand{\bibfont}{\small}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!45!black,
+  citecolor=blue!45!black,urlcolor=blue!45!black]{hyperref}
+\usepackage{bookmark}
+\hypersetup{pdftitle={SAT and Exact Counting Below Four Gates per Input},
+  pdfauthor={Samuel Schlesinger},
+  pdfsubject={A short proof of a gate-count bound for Circuit SAT and exact counting}}
+\setlength{\emergencystretch}{1.5em}
+\setlist[enumerate]{leftmargin=*,itemsep=3pt,topsep=5pt}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newcommand{\B}{\{0,1\}}
+\newcommand{\poly}{\operatorname{poly}}
+\newcommand{\satcount}{\operatorname{\#SAT}}
+\title{SAT and Exact Counting\\Below Four Gates per Input}
+\author{Samuel Schlesinger}
+\date{September 7, 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+For every fixed $\varepsilon>0$, a Boolean circuit with $n$ inputs
+and $s$ gates can be counted exactly in time
+$\poly_\varepsilon(n+s+1)2^{(1/4+\varepsilon)(s+1)}$.
+Gates compute arbitrary functions of at most two inputs, and the
+algorithm permits exponential space. It therefore beats exhaustive
+search when $s\le(4-\gamma)n$ for any fixed $0<\gamma<4$.
+The proof balances enumeration of the used inputs against contraction
+of a counting network whose cycle rank is at most the gate count
+minus the used-input count plus one. This is a quantitative application
+of established graph-width and contraction methods.
+\end{abstract}
+
+\section{The guarantee and the algorithm}
+
+Let $C$ be an acyclic circuit over the full binary basis $B_2$,
+with $n$ inputs, $s$ gates, and one output. Each gate computes an
+arbitrary Boolean function of at most two inputs; constants and
+wiring are free, and fan-out is unrestricted. Write
+$\satcount(C)=|\{x\in\B^n:C(x)=1\}|$.
+Polynomial prefactors may depend on the fixed positive parameter
+in their subscript. Arithmetic costs include the bit lengths of
+the integers being counted.
+
+\begin{theorem}\label{thm:main}
+For every fixed $\varepsilon>0$, exact counting and satisfiability
+of $C$ can be computed deterministically in time
+\begin{equation}\label{eq:headline}
+ \boxed{\;\poly_\varepsilon(n+s+1)\,
+ 2^{(1/4+\varepsilon)(s+1)}.\;}
+\end{equation}
+Space is bounded by a polynomial times the same exponential factor.
+\end{theorem}
+
+The proof gives a sharper bound before eliminating the number of
+used inputs. Prune to the output cone, substitute constants, and
+remove irrelevant pins and identity gates, repeating pruning after
+each simplification until no rule applies. Let $C'$ have $b$ used
+inputs and $q\le s$ gates. Then
+$\satcount(C)=2^{n-b}\satcount(C')$. This polynomial-time
+normalization need not find a smallest circuit. Constant and
+designated-input outputs are counted directly; below assume $q\ge1$.
+
+\begin{proposition}\label{prop:sensitive}
+For every fixed $\delta>0$, the count can be computed in time
+\begin{equation}\label{eq:sensitive}
+ \poly_\delta(n+s+1)\,
+ 2^{\min\{b,(1/3+\delta)(s+1-b)\}},
+\end{equation}
+with space bounded by a polynomial times the same exponential factor.
+\end{proposition}
+
+\begin{samepage}
+The algorithm has four steps:
+\begin{enumerate}
+ \item Normalize $C$, obtaining a circuit $C'$ on $b$ used inputs.
+ \item Encode $C'$ as integer tables on a graph of cycle rank
+       $\kappa\le s+1-b$. Reduce it exactly to a scalar factor and
+       a simple cubic graph $K$ with $N\le2\kappa$ vertices.
+ \item Construct a vertex order of $K$ with cutwidth
+       $w\le(1/3+\delta)\kappa+O_\delta(1)$.
+ \item If $b\le w$, enumerate the inputs of $C'$; otherwise evaluate
+       its tables along the order, keeping a table on the crossing
+       edges. Return $2^{n-b}\satcount(C')$.
+\end{enumerate}
+\end{samepage}
+If $K$ is empty, its scalar already gives $\satcount(C')$.
+The next three sections prove the encoding, the width bound, and the
+time bound. Only the stated graph-width theorem is imported.
+
+\section{Circuit values give a small cycle budget}
+
+Introduce one variable for each used input and each gate output.
+Each gate $v$ imposes its equation
+$z_v=\operatorname{op}_v(\text{predecessor values})$; add the unary
+constraint $z_{\rm out}=1$. Form the bipartite incidence multigraph
+$H$ between these variables and constraints. Each occurrence is an
+edge, including repeated uses of one value at the same gate.
+If $\ell\le2q$ counts the gate input pins, then
+\[
+ |V(H)|=2q+b+1,\qquad |E(H)|=q+\ell+1.
+\]
+Every remaining value leads to the output, so $H$ is connected. Thus
+\begin{equation}\label{eq:budget}
+ \kappa:=|E(H)|-|V(H)|+1
+       =\ell-q-b+1\le q+1-b\le s+1-b.
+\end{equation}
+
+Give every incidence edge an independent binary index. At each
+variable vertex, put the table that is one exactly when all its
+incident indices agree. A degree-one equality table is $(1,1)$.
+At each constraint vertex, put its zero-one truth table. The
+\emph{contraction} is the sum, over all edge-index assignments, of
+the product of all local entries. A high-degree equality table is
+represented by its equality rule, without listing its entries;
+it is expanded into ternary tables in the next proof.
+
+\begin{lemma}\label{lem:encoding}
+This contraction equals $\satcount(C')$. In polynomial time it reduces
+to a scalar factor times a network on an empty graph or a simple
+connected cubic graph $K$. All remaining tables have at most eight
+entries, and, if $N=|V(K)|>0$,
+\begin{equation}\label{eq:cubic}
+ N=2(\kappa(K)-1)\le2(\kappa-1).
+\end{equation}
+\end{lemma}
+\begin{proof}
+For any assignment of the $b$ inputs, topological evaluation uniquely
+determines all gate values. Equality tables uniquely determine their
+incidence indices. Hence an accepting input contributes exactly one
+to the sum, and every other input contributes zero.
+
+Replace each equality vertex of degree $D\ge4$ by a tree of $D-2$
+ternary equality vertices. For each external assignment, there is
+exactly one internal extension if all its bits agree and none
+otherwise. The replacement adds equally many vertices and edges,
+preserving cycle rank. Since the original variable degrees sum to
+$q+\ell+1$, the resulting subcubic network has at most $4q+2$
+vertices and $O(q+1)$ edges.
+
+Now repeat the following exact operations:
+\begin{enumerate}
+ \item Absorb a rank-zero table into a scalar accumulator.
+ \item Sum a loop over its two diagonal entries:
+       $T'(a)=T(0,0,a)+T(1,1,a)$, where $a$ denotes the other ports.
+ \item At a loop-free vertex of degree one or two, contract one
+       edge into its neighbor, summing over that edge's bit. Any
+       second shared edge becomes a loop.
+ \item If two cubic vertices share $j\in\{2,3\}$ edges, contract
+       all $j$ together, summing over their $2^j$ assignments.
+\end{enumerate}
+Each operation uses constantly many integer additions and
+multiplications, preserves the contraction, decreases $|V|+|E|$,
+and leaves every table with at most three ports. Ordinary edge
+contraction preserves cycle rank; eliminating a loop lowers it by
+one; contracting $j$ parallel edges lowers it by $j-1$.
+The nonempty remainder stays connected. When no operation applies,
+it is simple and cubic. Therefore $|E(K)|=3N/2$ and
+$\kappa(K)=N/2+1$, proving~\eqref{eq:cubic}.
+\end{proof}
+
+These operations count internal assignments conditional on the
+surviving boundary. In particular, a loop is summed over two
+consistent values, and parallel edges are summed jointly. The
+edges carry constraints and cannot simply be deleted.
+
+\section{A narrow order for the cubic remainder}
+
+A path decomposition consists of bags that cover the vertices,
+contain both endpoints of each edge in some bag, and contain each
+vertex in a consecutive interval of bags. Its width is the largest
+bag size minus one. The cutwidth of a vertex order is the maximum
+number of edges between a prefix and its complement.
+
+We use the following theorem of Fomin and H\o ie
+\citep[Theorem 5 and Section 4]{FominHoie2006}: for each fixed
+$\eta>0$, every sufficiently large simple graph of maximum degree
+three has a path decomposition of width at most $(1/6+\eta)N$,
+constructible in polynomial time. The threshold and polynomial
+may depend on $\eta$.
+
+The next inequality is standard; see, for example, the proof of
+\citet[Lemma 16]{Bodlaender2025}. We give a direct constructive proof
+for the cubic case used here.
+
+\begin{lemma}\label{lem:width}
+From a width-$k$ path decomposition of a simple cubic graph, one can
+construct a vertex order of cutwidth at most $k+2$ in polynomial time.
+\end{lemma}
+\begin{proof}
+Represent each vertex $v$ by the interval
+$I_v=[\operatorname{first}(v)-1/4,\operatorname{last}(v)+1/4]$ of
+its bag positions. At most $k+1$ such intervals cover any point.
+For each edge $e=uv$, choose a distinct rational timestamp $t_e$
+in the interior of $I_u\cap I_v$. Such timestamps can be obtained
+by distinct small rational perturbations of a bag containing $u,v$,
+using polynomially many bits. Order the vertices by the median
+$t_v$ of their three incident timestamps, breaking ties arbitrarily.
+
+At a cut $t$ between distinct vertex timestamps, consider a crossing
+edge $e=uv$ with $t_u<t<t_v$. Charge it to $u$ if $t_e>t$, and to
+$v$ otherwise. The charged vertex's interval contains $t$. It
+receives at most one charge, since a cubic vertex has only one
+incident timestamp above its median and only one below it.
+There are consequently at most $k+1$ crossing edges.
+
+If a cut separates vertices with tied medians $t$, at most two
+vertices tie: distinct edge timestamps can be the median only of
+their endpoints. The same charging rule at $t$ handles every
+crossing edge except possibly the one timestamped $t$ itself.
+That adds at most one edge, giving $k+2$.
+\end{proof}
+
+Use the cited theorem with $\eta=\delta/2$ and apply
+Lemma~\ref{lem:width}. By~\eqref{eq:cubic}, for sufficiently large
+$K$ the resulting order has
+\[
+ w\le(1/6+\delta/2)N+2
+   \le(1/3+\delta)\kappa+2.
+\]
+Below the fixed size threshold, any order has bounded cutwidth.
+This proves $w\le(1/3+\delta)\kappa+O_\delta(1)$ for every $K$
+and gives the polynomial-time layout step of the algorithm.
+
+\section{Frontier counting and the running time}
+
+Order the cubic vertices as $v_1,\ldots,v_N$, and let $F_i$ be the
+edges leaving the first $i$ vertices. For each assignment
+$\beta\in\B^{F_i}$, store $P_i(\beta)$: the sum of the products
+of the processed tables over all processed internal edge values,
+with the frontier fixed to $\beta$. Initialize $P_0(\varnothing)=1$.
+
+At vertex $v_i$, let $J_i$ be the edges back to the processed
+prefix, $R_i$ the edges forward, and
+$S_i=F_{i-1}\setminus J_i=F_i\setminus R_i$ the unchanged frontier.
+The update is
+\begin{equation}\label{eq:update}
+ P_i(\beta)=\sum_{\gamma\in\B^{J_i}}
+ P_{i-1}(\beta|_{S_i},\gamma)\,
+ T_{v_i}(\gamma,\beta|_{R_i}).
+\end{equation}
+Distributivity preserves the invariant. The final value
+$P_N(\varnothing)$, multiplied by the scalar from the reduction,
+is $\satcount(C')$.
+
+Write $j=|J_i|$. The update uses fewer than
+$2^{|F_i|+j+1}$ arithmetic operations. Cubicity gives
+$|F_i|=|F_{i-1}|+3-2j$. Since both frontiers have size at most $w$,
+\[
+ |F_i|+j\le w+1:
+ \quad\text{use the new frontier for $j\le1$ and the old for $j\ge2$.}
+\]
+Thus contraction takes $O(N2^w)$ arithmetic operations and
+$O(2^w)$ stored entries, keeping only two successive frontiers.
+
+Every intermediate entry counts assignments to a subset of the
+$O(q+1)$ binary indices in the expanded zero-one network, conditional
+on a boundary assignment. Its bit length is therefore $O(q+1)$.
+Arithmetic has polynomial bit cost, and multiplication by $2^{n-b}$
+is a shift producing an answer of at most $n+1$ bits. Consequently
+the contraction runs in time $\poly(n+s+1)2^w$.
+
+\paragraph{Why the space is exponential.}
+The table has one entry per assignment to the crossing wires:
+$w$ binary wires give up to $2^w$ entries. Each entry has only
+polynomially many bits. For SAT alone, Boolean entries suffice,
+but the table still has up to $2^w$ of them. Storing the table allows
+each partial computation to be reused; recomputing entries instead
+may increase the time. This is a space upper bound for the present
+implementation, not a lower bound on the space needed to achieve
+the exponent. The enumeration branch uses polynomial space.
+
+\begin{proof}[Proof of Proposition~\ref{prop:sensitive}]
+Lemmas~\ref{lem:encoding} and~\ref{lem:width} give polynomial-time
+preprocessing and $w\le\alpha\kappa+c_\delta$, where
+$\alpha=1/3+\delta$ and $c_\delta$ is a constant.
+The algorithm chooses between contraction and enumeration using
+the computed integer $w$. Its time is at most
+\[
+ \poly_\delta(n+s+1)2^{\min\{b,w\}}
+ \le\poly_\delta(n+s+1)2^{\min\{b,\alpha\kappa\}}.
+\]
+Here the constant factor $2^{c_\delta}$ is absorbed into the
+polynomial prefactor. Equation~\eqref{eq:budget} gives
+\eqref{eq:sensitive}. The space bound follows from the two stored
+frontiers; enumeration itself uses polynomial space.
+\end{proof}
+
+\section{The four-gate threshold and the comparison}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Write $S=s+1$ and $\alpha=1/3+\delta$. For $0\le b\le S$,
+\[
+ \min\{b,\alpha(S-b)\}\le\frac{\alpha}{1+\alpha}S,
+ \qquad
+ \frac{\alpha}{1+\alpha}
+ =\frac14+\frac{9\delta}{16+12\delta}.
+\]
+Proposition~\ref{prop:sensitive} with $\delta=\varepsilon$ proves
+\eqref{eq:headline}, with the asserted space bound. SAT is decided
+by testing whether the count is positive.
+\end{proof}
+
+Ignoring the fixed positive slack, the competing exponents are
+$b$ and $(s+1-b)/3$. Their worst balance occurs at $s+1=4b$:
+either there are few enough used inputs to enumerate, or the cycle
+budget left over after accounting for those inputs is small enough
+to contract. This is the source of the constant four.
+
+\begin{corollary}\label{cor:four}
+For each fixed $0<\gamma<4$, circuits with $s\le(4-\gamma)n$
+admit deterministic SAT and exact counting in time
+$\poly_\gamma(n+1)2^{(1-\gamma/8)n}$.
+\end{corollary}
+\begin{proof}
+Set $\varepsilon=\gamma/[8(4-\gamma)]$ in~\eqref{eq:headline}.
+Then $(1/4+\varepsilon)(s+1)\le(1-\gamma/8)n+(1/4+\varepsilon)$.
+\end{proof}
+
+\paragraph{Comparison with the $2.99n$ counting algorithm.}
+Golovnev, Kulikov, Smal, and Tamaki give a gate-elimination algorithm
+for exact counting in the same unrestricted-fan-out $B_2$ model
+\citep{GKST2018}. Their corrected preprint, Section 5.2, Remark 2,
+gives a running time $\poly_\zeta(n)2^{(1-c_\zeta)n}$ for circuits of
+size at most $(3-\zeta)n$, where $c_\zeta>0$ for each fixed
+$0<\zeta<3$. Thus $2.99n$ is an example within their range.
+Their decreasing measure bounds each circuit's size by
+$O_\zeta(s+n)$, and each branch eliminates an input. A depth-first
+evaluation therefore uses polynomial space.
+
+Here the fixed-gap range reaches $(4-\gamma)n$, using exponential
+space on the contraction branch. For example, at $s\le2.99n$,
+Theorem~\ref{thm:main} gives time
+$\poly_\rho(n+1)2^{(0.7475+\rho)n}$ for every fixed $\rho>0$.
+This is a different time--space guarantee; it does not supply a
+polynomial-space extension of their result to the four-gate range.
+
+\paragraph{Scope and antecedents.}
+The positive slack is fixed before the input size grows; a uniform
+endpoint bound
+$\poly(n+s)2^{s/4}$ and a polynomial-space algorithm with this
+exponent are not established here. Width-based tensor contraction
+and counting representations are established methods
+\citep{MarkovShi2008,DudekDuenasOsorioVardi2020}; the note spells out
+their circuit-specific cycle budget and exponent calculation.
+Historical priority of the precise bound and its best-known status
+among algorithms permitting exponential space remain unestablished.
+The accompanying repository checks finite components of the proof;
+it does not implement or benchmark the full asymptotic algorithm.
+
+\bibliographystyle{plainnat}
+\bibliography{sat-note}
+\end{document}

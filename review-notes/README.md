@@ -4,6 +4,9 @@ These are dated working records, retained to make the research process
 inspectable. They describe the manuscript version named in each record;
 earlier concerns, page counts, and PDF hashes may have been superseded.
 
+For the standalone five-page SAT note, see its
+[validation record](sat-note-review.md).
+
 Start with the [deep-dive validation](deep-dive-validation.md) for the expanded
 edition. The [initial publication validation](publication-validation.md) records
 the earlier repository edition. The current mathematical statements are in

@@ -28,6 +28,11 @@ Historical priority and best-known unrestricted-space status remain unestablishe
 **[Literature comparison](research/literature/final-comparison.md)** ·
 **[Research record](research/index.md)**
 
+For a focused treatment, read the **[short SAT and counting note](output/pdf/sat-note.pdf)**.
+It gives the algorithm and proof in one place, with its own
+[LaTeX source](sat-note.tex) and [bibliography](sat-note.bib).
+Build it with `make sat-note`.
+
 ## What the restriction buys
 
 The headline bound gives these limiting coefficients in the exponent of `2^u`:

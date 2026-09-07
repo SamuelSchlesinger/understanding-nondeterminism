@@ -39,13 +39,16 @@ jobs:
       - name: Build PDF with failure diagnostics
         run: |
           make pdf || { cat main.log; exit 1; }
+          make sat-note || { cat output/pdf/sat-note.log; exit 1; }
       - name: Check references and typography
         run: |
-          if grep -E '(^!|LaTeX Warning:|Package .* Warning:|Overfull|Underfull)' main.log; then
+          if grep -E '(^!|LaTeX Warning:|Package .* Warning:|Overfull|Underfull)' main.log output/pdf/sat-note.log; then
             exit 1
           fi
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: understanding-nondeterminism-paper
-          path: main.pdf
+          path: |
+            main.pdf
+            output/pdf/sat-note.pdf
           if-no-files-found: error
