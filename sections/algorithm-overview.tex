@@ -7,6 +7,14 @@ input bits and $s$ internal gates. Work over the full binary basis $B_2$:
 every Boolean function of at most two inputs is a unit-cost gate,
 constants and wiring are free, and fan-out is unrestricted.
 
+The construction exploits two complementary measures: the number of
+used inputs and the size of the boundary needed to maintain consistency.
+The worked example establishes the local mechanism for summarizing a
+region by conditional counts. The general argument separates exactness
+of these summaries from the existence of an efficiently constructed
+narrow processing order. The counting invariant establishes correctness;
+the graph theorem supplies the resource bound.
+
 \paragraph{Headline guarantee.}
 For every fixed $\varepsilon>0$, the construction counts the satisfying
 assignments of $C$, and therefore decides its satisfiability, in time
@@ -73,8 +81,11 @@ proves the uniform count-preserving algorithm and its bit complexity.
 This is an asymptotic algorithm with exponential space, derived from
 established width and tensor methods with explicit circuit-specific
 accounting. The repository contains finite checks of supporting
-constructions, not an implementation or benchmark of the complete
-counting algorithm. Historical priority of the precise bound and its
+constructions and a Rust implementation of the complete automatic
+counting route in \texttt{rs/}. Its source-to-proof correspondence and
+fixed-parameter resource argument are recorded in \texttt{rs/ALGORITHM.md}.
+The retained structured timings illustrate a mechanism; they do not
+establish the asymptotic bound empirically. Historical priority of the precise bound and its
 best-known unrestricted-space status remain unestablished; the
 statement-level comparison is in Section~\ref{sec:prior-work}.
 

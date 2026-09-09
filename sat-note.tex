@@ -45,6 +45,14 @@ of established graph-width and contraction methods.
 
 \section{The guarantee and the algorithm}
 
+The algorithm replaces a processed region by a table of conditional
+counts on its shared boundary. Internal assignments with the same
+boundary values have identical effects on the remaining constraints,
+so only their multiplicities must be retained. A counting invariant
+justifies this compression; graph structure bounds the table's size.
+Input enumeration provides a complementary bound, since a larger
+used-input count leaves a smaller consistency-cycle budget.
+
 Let $C$ be an acyclic circuit over the full binary basis $B_2$,
 with $n$ inputs, $s$ gates, and one output. Each gate computes an
 arbitrary Boolean function of at most two inputs; constants and
@@ -101,6 +109,24 @@ The next three sections prove the encoding, the width bound, and the
 time bound. Only the stated graph-width theorem is imported.
 
 \section{Circuit values give a small cycle budget}
+
+\paragraph{Conditional counts in a three-gate circuit.}
+Let $a=x\lor y$, $c=y\oplus z$, and let the output be $a\land c$.
+For acceptance both $a$ and $c$ must be one. After summing over $x$
+and $z$ separately, the two tables, indexed by the same $y$, are
+\[
+\begin{array}{c|cc|c}
+y&\#\{x:x\lor y=1\}&\#\{z:y\oplus z=1\}&\text{product}\\\hline
+0&1&1&1\\
+1&2&1&2
+\end{array}
+\]
+Thus the count is $1\cdot1+2\cdot1=3$. Multiplication combines
+choices that agree on $y$; addition joins the disjoint cases for $y$.
+Summing the columns independently would give $(1+2)(1+1)=6$:
+it would allow two uses of one input to disagree. The general boundary
+table prevents this same error. The entry two records the fact that
+either value of $x$ makes $x\lor1$ true.
 
 Introduce one variable for each used input and each gate output.
 Each gate $v$ imposes its equation
@@ -242,6 +268,11 @@ $\beta\in\B^{F_i}$, store $P_i(\beta)$: the sum of the products
 of the processed tables over all processed internal edge values,
 with the frontier fixed to $\beta$. Initialize $P_0(\varnothing)=1$.
 
+Only processed
+constraints contribute, so a positive entry need not extend to a
+solution. The invariant permits us to forget the identities of internal
+histories, while retaining their count for each possible boundary.
+
 At vertex $v_i$, let $J_i$ be the edges back to the processed
 prefix, $R_i$ the edges forward, and
 $S_i=F_{i-1}\setminus J_i=F_i\setminus R_i$ the unchanged frontier.
@@ -254,6 +285,13 @@ The update is
 Distributivity preserves the invariant. The final value
 $P_N(\varnothing)$, multiplied by the scalar from the reduction,
 is $\satcount(C')$.
+
+For a fixed new boundary assignment, each choice of consumed bits
+$\gamma$ identifies an old entry and a compatible local entry.
+Their product counts matching assignments in disjoint regions; the
+sum joins disjoint choices of $\gamma$. The untouched frontier $S_i$
+stays fixed, retaining every value still shared with the unprocessed
+region.
 
 Write $j=|J_i|$. The update uses fewer than
 $2^{|F_i|+j+1}$ arithmetic operations. Cubicity gives
@@ -358,7 +396,12 @@ their circuit-specific cycle budget and exponent calculation.
 Historical priority of the precise bound and its best-known status
 among algorithms permitting exponential space remain unestablished.
 The accompanying repository checks finite components of the proof;
-it does not implement or benchmark the full asymptotic algorithm.
+its \texttt{rs/} directory also implements the complete automatic
+algorithm. The source-to-proof map and fixed-parameter resource
+argument are in \texttt{rs/ALGORITHM.md}. Its retained structured
+timings illustrate small-kernel behavior, rather than establishing
+the worst-case guarantee empirically.
+
 
 \bibliographystyle{plainnat}
 \bibliography{sat-note}

@@ -20,8 +20,10 @@ poly_epsilon(s + u + 1) * 2^((1/4 + epsilon)(s + 1)).
 Choosing epsilon small enough for the fixed gap gamma gives
 `poly(u) * 2^((1 - eta)u)` for some `eta > 0`: an exponential saving over
 enumerating all `2^u` assignments. **The algorithm allows exponential space.**
-This is a proved asymptotic construction, with finite checks of supporting
-components; the repository does not implement or benchmark the full SAT solver.
+This is an asymptotic construction with a [Rust implementation](rs/README.md),
+a [source-to-proof resource argument](rs/ALGORITHM.md), and finite checks.
+The [structured example timings](rs/EXPERIMENT.md) illustrate the mechanism;
+they do not empirically establish the worst-case guarantee.
 Historical priority and best-known unrestricted-space status remain unestablished.
 
 **[Read the paper](main.pdf)** · **[Algorithm and proof](sections/counting-algorithm.tex)** ·
@@ -134,12 +136,14 @@ The PDF build requires `latexmk`, BibTeX, and the LaTeX packages declared in
 TeX Live or MacTeX installation supplies them. CI runs the same checks and
 builds the PDF; its workflow records the Ubuntu package list.
 
-`make check` validates corpus links and citation keys, reruns seven finite
+`make check` validates corpus links and citation keys, reruns the retained finite
 verification suites, and compares their outputs with retained records.
 Those finite domains check the supporting constructions; the general results
 depend on the written proofs and cited graph theorem. In particular, the
 checks cover local integer tables and counting-oracle queries, but do not
-implement the asymptotic layout construction or the full counting algorithm. `make clean` removes LaTeX intermediates and keeps
+implement the asymptotic layout construction or the full counting algorithm.
+The separate Rust implementation and its checks are documented in
+[rs/README.md](rs/README.md). `make clean` removes LaTeX intermediates and keeps
 the committed reading copy, `main.pdf`.
 
 ## Repository guide

@@ -133,8 +133,15 @@ conversion, not from the finite graphs tested.
 The tensor checker evaluates Boolean projections. The integer-counting
 corollary is justified analytically. The expanded walkthrough adds finite
 integer-table checks, while the search and generation validator uses explicit
-finite counting oracles. No implementation or timing study of the full
-asymptotic counting algorithm is claimed.
+finite counting oracles. These Python suites are distinct from the later
+Rust implementation in \texttt{rs/}, which implements the complete
+automatic counting route, including constructive layout. Its
+\texttt{ALGORITHM.md} records the fixed-parameter resource argument
+and the imported graph lemmas. The structured parity-substitution
+experiment in \texttt{EXPERIMENT.md} retains a small kernel while the
+input count grows; it illustrates that mechanism and does not measure
+the worst-case exponent. Configured resource caps return errors when
+the selected route exceeds its limit.
 
 Two further retained suites support the pedagogical expansion. The walkthrough
 checks all 4,096 triples of binary gate tables on all eight input assignments

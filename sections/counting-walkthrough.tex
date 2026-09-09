@@ -7,6 +7,15 @@ but a partial calculation must retain the values on which unprocessed gates
 still depend. We work through this distinction numerically before using
 graph width to bound the size of those partial calculations.
 
+The organizing principle is that a processed region interacts with the
+remaining circuit only through their shared values. A table indexed by
+those values can therefore replace the region, recording the number of
+compatible internal assignments in each entry. Internal assignments with
+the same boundary values have identical effects on every remaining
+constraint. Their identities can be discarded while their multiplicity
+is retained. This conditional-count interpretation will serve as the
+invariant of both local elimination and frontier evaluation.
+
 \subsection{Gate equations preserve the objects being counted}
 
 Return to the circuit
@@ -154,6 +163,15 @@ This counts assignments to a changed circuit with two independent inputs
 in place of the shared $y$. The extra three combinations disagree between
 the two branches. The equality table prevents precisely those combinations.
 
+The same counting rule applies when the local operation changes.
+Replacing the XOR gate by AND gives
+\[
+ B_{\land}=\begin{pmatrix}2&0\\1&1\end{pmatrix},
+ \qquad Z=1\cdot0+2\cdot1=2.
+\]
+The surviving inputs are $011$ and $111$. The local table changes;
+the requirement to retain one shared $y$ does not.
+
 Pinning $x$ exposes the two witness fibers without changing the network's
 edges. Replace its leaf table $(1,1)$ by $(1,0)$ for $x=0$ or $(0,1)$
 for $x=1$. The resulting left tables are
@@ -262,6 +280,13 @@ bits $\eta$ and a unique assignment counted by the corresponding old
 entry. This proves the invariant by induction, starting with the empty
 prefix's scalar one. At the end the boundary is empty and its scalar is
 the desired count.
+
+The product in the update combines assignments in disjoint regions with
+matching consumed bits. The sum combines disjoint cases for those bits,
+while the unchanged frontier remains fixed. Thus the algebra expresses
+the conditional-count interpretation directly: a value is eliminated
+only after all its incident constraints have been included in the
+processed region.
 
 For a concrete transition with two consumed edges and one new edge,
 let $P_i(p,q)$ have rows $(1,2)$ and $(3,4)$, and let
